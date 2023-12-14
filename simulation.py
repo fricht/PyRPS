@@ -51,11 +51,14 @@ class Entity:
 		self._signal: float = 0.0
 		self.age: int = 0
 
-	def step(self: 'Entity', vision: np.ndarray) -> None:
-		net_response: np.ndarray = self.network.feed_forward(vision.flatten())
+	def step(self: 'Entity', vision: np.ndarray) -> np.ndarray:
+		net_response: np.ndarray = self.network.feed_forward(np.append(vision.flatten(), np.array([self.age, self.energy])))
 		self.age += 1
 		self.energy -= self.loss * (self.age / 100) ** 2
 		self._signal = net_response[3]
+		net_response[0] = net_response[0] * 2 - 1
+		net_response[1] = net_response[1] * 2 - 1
+		return net_response
 
 	def sub_process(self: 'Entity') -> None:
 		self.signal = self._signal
@@ -78,29 +81,71 @@ class Simulation:
 		self.grid_size: tuple[int, int] = grid_size
 		self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		self.tick: int = 0
-		self.generate(pop_size, grid_size, internal_neurons)
+		self.generate(pop_size, internal_neurons)
 
-	def generate(self: 'Simulation', pop_size: int, grid_size: tuple[int, int], net_size: list[int]) -> None:
+	def generate(self: 'Simulation', pop_size: int, net_size: list[int]) -> None:
 		for _ in range(pop_size):
 			# Rock
 			self.map[
-				random.randint(0, grid_size[0] - 1),
-				random.randint(0, grid_size[0] - 1)
-			] = Entity(0, Network(net_size))
+				random.randint(0, self.grid_size[0] - 1),
+				random.randint(0, self.grid_size[0] - 1)
+			] = Entity(0, Network([self.vision[0] + 1, net_size, 4]), self.energy[0][0], self.loss_factor[0])
 			# Paper
 			self.map[
-				random.randint(0, grid_size[0] - 1),
-				random.randint(0, grid_size[0] - 1)
-			] = Entity(1, Network(net_size))
+				random.randint(0, self.grid_size[0] - 1),
+				random.randint(0, self.grid_size[0] - 1)
+			] = Entity(1, Network([self.vision[0] + 1, net_size, 4]), self.energy[1][0], self.loss_factor[1])
 			# Scissors
 			self.map[
-				random.randint(0, grid_size[0] - 1),
-				random.randint(0, grid_size[0] - 1)
-			] = Entity(2, Network(net_size))
+				random.randint(0, self.grid_size[0] - 1),
+				random.randint(0, self.grid_size[0] - 1)
+			] = Entity(2, Network([self.vision[0] + 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
+
+	def delta_entity_type(self: 'Simulation', e_ref: int, e: int) -> int:
+		if e_ref == e:
+			return 1
+		if abs(e_ref - e) == 1:
+			return 4 * int(e_ref < e) - 2
+		else:
+			return 4 * int(e_ref > e) - 2
 
 	def step(self: 'Simulation') -> None:
-		# TODO : change the way to handle movements, for now, entities can destroy others by just 'walking' on them
+		self.tick += 1
+		# TODO : change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
 		new_map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		for ind, entity in np.ndenumerate(self.map):
-			pass
+			if entity is not None:
+				if entity.energy <= 0:
+					continue
+				# compute vision
+				vision: np.ndarray = np.zeros(shape=(self.vision[entity.type] ** 2 - 1, 3))
+				t: int = 0  # tracker for vision index (simpler)
+				for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
+					for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
+						if dx == dy == 0:
+							continue
+						t += 1
+						x: int = ind[0] + dx
+						y: int = ind[1] + dy
+						if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):
+							vision[t, 0] = -1
+							continue
+						if self.map[x, y] is None:
+							continue
+						d_e_type: int = self.delta_entity_type(entity.type, self.map[x, y].type)
+						vision[t, 0] = d_e_type
+						vision[t, 1] = self.map[x, y].energy
+						vision[t, 2] = self.map[x, y].signal * int(d_e_type == 1)
+				# process NN
+				action = entity.step(vision)
+				# apply movements
+				new_pos = (
+					ind[0] + min(max(round(action[0] * self.speed[entity.type]), 0), self.grid_size[0] - 1),
+					ind[1] + min(max(round(action[1] * self.speed[entity.type]), 0), self.grid_size[1] - 1)
+				)
+				new_map[new_pos] = entity
+				# TODO : handle killing
+		for entity in np.nditer(new_map):
+			if entity is not None:
+				entity.sub_process()
 		self.map = new_map

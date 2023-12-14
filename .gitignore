@@ -653,3 +653,7 @@ FodyWeavers.xsd
 # Built Visual Studio Code Extensions
 *.vsix
 
+
+
+# Test code
+/local_tests.py

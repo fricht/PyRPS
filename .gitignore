@@ -5,7 +5,7 @@ __pycache__/
 
 # PyCharm
 .idea/
-.idea/*
+/idea/.gitignore
 
 
 # Test and debug code

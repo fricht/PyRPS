@@ -1,4 +1,4 @@
-import random
+from typing import Any
 import numpy as np
 import random
 
@@ -77,7 +77,14 @@ class Simulation:
 	loss_factor: tuple[float, float, float]  # evergy loss over time : ax^2, where 'a' is the loss factor
 	vision: tuple[int, int, int]  # square or circle ?
 
-	def __init__(self: 'Simulation', grid_size: tuple[int, int], pop_size: int, internal_neurons: list[int]) -> None:
+	def __init__(self: 'Simulation', grid_size: tuple[int, int], pop_size: int, internal_neurons: list[int], data: dict[str, Any]) -> None:
+		self.speed = data['speed']
+		self.damage = data['damage']
+		self.steal = data['steal']
+		self.range = data['range']
+		self.energy = data['energy']
+		self.loss_factor = data['loss_factor']
+		self.vision = data['vision']
 		self.grid_size: tuple[int, int] = grid_size
 		self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		self.tick: int = 0
@@ -89,17 +96,17 @@ class Simulation:
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(0, Network([self.vision[0] + 1, net_size, 4]), self.energy[0][0], self.loss_factor[0])
+			] = Entity(0, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[0][0], self.loss_factor[0])
 			# Paper
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(1, Network([self.vision[0] + 1, net_size, 4]), self.energy[1][0], self.loss_factor[1])
+			] = Entity(1, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[1][0], self.loss_factor[1])
 			# Scissors
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(2, Network([self.vision[0] + 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
+			] = Entity(2, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
 
 	def delta_entity_type(self: 'Simulation', e_ref: int, e: int) -> int:
 		if e_ref == e:
@@ -118,8 +125,8 @@ class Simulation:
 				if entity.energy <= 0:
 					continue
 				# compute vision
-				vision: np.ndarray = np.zeros(shape=(self.vision[entity.type] ** 2 - 1, 3))
-				t: int = 0  # tracker for vision index (simpler)
+				vision: np.ndarray = np.zeros(shape=((2 * self.vision[entity.type] + 1) ** 2 - 1, 3))
+				t: int = -1  # tracker for vision index (simpler)
 				for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 					for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 						if dx == dy == 0:
@@ -140,12 +147,13 @@ class Simulation:
 				action = entity.step(vision)
 				# apply movements
 				new_pos = (
-					ind[0] + min(max(round(action[0] * self.speed[entity.type]), 0), self.grid_size[0] - 1),
-					ind[1] + min(max(round(action[1] * self.speed[entity.type]), 0), self.grid_size[1] - 1)
+					min(max(round(ind[0] + action[0] * self.speed[entity.type]), 0), self.grid_size[0] - 1),
+					min(max(round(ind[1] + action[1] * self.speed[entity.type]), 0), self.grid_size[1] - 1)
 				)
 				new_map[new_pos] = entity
+				# TODO : handle new born
 				# TODO : handle killing
-		for entity in np.nditer(new_map):
+		for _, entity in np.ndenumerate(new_map):  # , flags=['refs_ok']
 			if entity is not None:
 				entity.sub_process()
 		self.map = new_map

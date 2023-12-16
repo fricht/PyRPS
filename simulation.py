@@ -163,7 +163,7 @@ class Simulation:
 				# TODO : handle killing
 				if action[2] > 0.6 and len(food) > 0:
 					food.sort(key=lambda a: a[1])
-					entity.energy += food[0].damage(self.damage[entity.type]) * self.steal[entity.type]
+					entity.energy += food[0][0].damage(self.damage[entity.type]) * self.steal[entity.type]
 		for _, entity in np.ndenumerate(new_map):
 			if entity is not None:
 				entity.sub_process()

@@ -123,7 +123,8 @@ class Simulation:
 
 	def step(self: 'Simulation') -> None:
 		self.tick += 1
-		# TODO : change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
+		# (TODO) : change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
+		# collisions handled, maybe it's a solution
 		new_map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		for ind, entity in np.ndenumerate(self.map):
 			if entity is not None:
@@ -153,12 +154,37 @@ class Simulation:
 						vision[t, 2] = self.map[x, y].signal * int(d_e_type == 1)
 				# process NN
 				action = entity.step(vision)
-				# TODO : handle new born
-				# apply movements
-				new_pos: tuple[int, int] = (
+				new_pos: tuple[int, int] = (  # used later
 					min(max(round(ind[0] + action[0] * self.speed[entity.type]), 0), self.grid_size[0] - 1),
 					min(max(round(ind[1] + action[1] * self.speed[entity.type]), 0), self.grid_size[1] - 1)
 				)
+				# TODO : handle new born
+				if entity.energy >= self.energy[entity.type][1]:
+					entity.energy /= 2
+					child: Entity = Entity(
+						entity.type,
+						entity.network.child(self.mutation_rate, self.change_rate),
+						self.energy[entity.type][0],
+						self.loss_factor[entity.type]
+					)
+					if new_map[new_pos] is None:
+						new_map[new_pos] = child
+					else:
+						possibles_pos: list[list[int, int, int]] = []
+						for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
+							for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
+								x: int = new_pos[0] + dx
+								y: int = new_pos[1] + dy
+								if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):
+									continue
+								if new_map[x, y] is None:
+									possibles_pos.append([x, y, dx ** 2 + dy ** 2])
+						if len(possibles_pos) > 0:
+							possibles_pos.sort(key=lambda a: a[2])
+							new_map[possibles_pos[0][0], possibles_pos[0][1]] = child
+						else:
+							entity.energy *= 2  # gives back energy
+				# apply movements
 				if new_map[new_pos] is None:
 					new_map[new_pos] = entity
 				else:

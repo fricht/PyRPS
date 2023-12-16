@@ -139,9 +139,10 @@ class Simulation:
 						if dx == dy == 0:
 							continue
 						t += 1
-						x: int = ind[0] + dx
-						y: int = ind[1] + dy
-						if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):
+						x: int = (ind[0] + dx) % self.grid_size[0]
+						y: int = (ind[1] + dy) % self.grid_size[1]
+						if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):  # should never be True
+							print('WTF !')
 							vision[t, 0] = -1
 							continue
 						if self.map[x, y] is None:
@@ -155,10 +156,10 @@ class Simulation:
 				# process NN
 				action = entity.step(vision)
 				new_pos: tuple[int, int] = (  # used later
-					min(max(round(ind[0] + action[0] * self.speed[entity.type]), 0), self.grid_size[0] - 1),
-					min(max(round(ind[1] + action[1] * self.speed[entity.type]), 0), self.grid_size[1] - 1)
+					round(ind[0] + action[0] * self.speed[entity.type]) % self.grid_size[0],
+					round(ind[1] + action[1] * self.speed[entity.type]) % self.grid_size[1]
 				)
-				# TODO : handle new born
+				# handle newborn
 				if entity.energy >= self.energy[entity.type][1]:
 					entity.energy /= 2
 					child: Entity = Entity(
@@ -173,9 +174,9 @@ class Simulation:
 						possibles_pos: list[list[int, int, int]] = []
 						for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 							for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
-								x: int = new_pos[0] + dx
-								y: int = new_pos[1] + dy
-								if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):
+								x: int = (new_pos[0] + dx) % self.grid_size[0]
+								y: int = (new_pos[1] + dy) % self.grid_size[1]
+								if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):  # should never be True
 									continue
 								if new_map[x, y] is None:
 									possibles_pos.append([x, y, dx ** 2 + dy ** 2])
@@ -191,9 +192,9 @@ class Simulation:
 					possibles_pos: list[list[int, int, int]] = []
 					for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 						for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
-							x: int = new_pos[0] + dx
-							y: int = new_pos[1] + dy
-							if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):
+							x: int = (new_pos[0] + dx) % self.grid_size[0]
+							y: int = (new_pos[1] + dy) % self.grid_size[1]
+							if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):  # should never be True
 								continue
 							if new_map[x, y] is None:
 								possibles_pos.append([x, y, dx**2 + dy**2])

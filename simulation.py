@@ -51,6 +51,11 @@ class Entity:
 		self._signal: float = 0.0
 		self.age: int = 0
 
+	def damage(self: 'Entity', amount: float) -> float:
+		delta: float = min(abs(self.energy), amount)
+		self.energy -= amount
+		return delta
+
 	def step(self: 'Entity', vision: np.ndarray) -> np.ndarray:
 		net_response: np.ndarray = self.network.feed_forward(np.append(vision.flatten(), np.array([self.age, self.energy])))
 		self.age += 1
@@ -126,6 +131,7 @@ class Simulation:
 					continue
 				# compute vision
 				vision: np.ndarray = np.zeros(shape=((2 * self.vision[entity.type] + 1) ** 2 - 1, 3))
+				food: list[list[object, int]] = []
 				t: int = -1  # tracker for vision index (simpler)
 				for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 					for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
@@ -140,6 +146,8 @@ class Simulation:
 						if self.map[x, y] is None:
 							continue
 						d_e_type: int = self.delta_entity_type(entity.type, self.map[x, y].type)
+						if d_e_type == 2:
+							food.append([self.map[x, y], x**2 + y**2])
 						vision[t, 0] = d_e_type
 						vision[t, 1] = self.map[x, y].energy
 						vision[t, 2] = self.map[x, y].signal * int(d_e_type == 1)
@@ -153,7 +161,10 @@ class Simulation:
 				new_map[new_pos] = entity
 				# TODO : handle new born
 				# TODO : handle killing
-		for _, entity in np.ndenumerate(new_map):  # , flags=['refs_ok']
+				if action[2] > 0.6 and len(food) > 0:
+					food.sort(key=lambda a: a[1])
+					entity.energy += food[0].damage(self.damage[entity.type]) * self.steal[entity.type]
+		for _, entity in np.ndenumerate(new_map):
 			if entity is not None:
 				entity.sub_process()
 		self.map = new_map

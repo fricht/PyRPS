@@ -16,23 +16,15 @@ class Sim:
 		self.running = True
 		self.screen = pygame.display.set_mode((2*self.size[0], 2*self.size[1]))
 		# setup simulation
-		data = {
-			'speed': (6, 4, 3),
-			'damage': (8, 10, 11),
-			'steal': (0.7, 0.6, 0.74),
-			'energy': ((60, 100), (80, 120), (100, 150)),  # default energy, required energy to produce a child
-			'loss_factor': (0.08, 0.08, 0.08),
-			'vision': (7, 7, 8)
-		}
-		data_eq = {
+		self.data = {
 			'speed': (4, 4, 4),
 			'damage': (8, 8, 8),
 			'steal': (0.7, 0.7, 0.7),
-			'energy': ((70, 102), (70, 102), (70, 102)),  # default energy, required energy to produce a child
-			'loss_factor': (0.082, 0.082, 0.082),
+			'energy': ((70, 106), (70, 106), (70, 106)),  # default energy, required energy to produce a child
+			'loss_factor': (0.095, 0.095, 0.095),
 			'vision': (12, 12, 12)
 		}
-		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, data_eq)
+		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
 		self.log_0 = []
 		self.log_1 = []
 		self.log_2 = []
@@ -49,9 +41,9 @@ class Sim:
 				self.log_1[-1] += int(e.type == 1)
 				self.log_2[-1] += int(e.type == 2)
 				c = (
-					255 * int(e.type == 0),
-					255 * int(e.type == 1),
-					255 * int(e.type == 2)
+					min(max(255 * int(e.type == 0) * (e.energy / self.data['energy'][0]), 50), 255),
+					min(max(255 * int(e.type == 1) * (e.energy / self.data['energy'][1]), 50), 255),
+					min(max(255 * int(e.type == 2) * (e.energy / self.data['energy'][2]), 50), 255)
 				)
 				self.screen.set_at((2 * i[0], 2 * i[1]), c)
 				self.screen.set_at((2 * i[0]+1, 2 * i[1]), c)

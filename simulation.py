@@ -109,7 +109,7 @@ class Simulation:
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(2, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
+			] = Entity(2, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
 
 	def delta_entity_type(self: 'Simulation', e_ref: int, e: int) -> int:
 		if e_ref == e:

@@ -77,7 +77,6 @@ class Simulation:
 	speed: tuple[int, int, int]  # square or circle ?
 	damage: tuple[float, float, float]
 	steal: tuple[float, float, float]
-	range: tuple[int, int, int]  # range to kill entities
 	energy: tuple[tuple[float, float], tuple[float, float], tuple[float, float]]  # born, need to reproduce
 	loss_factor: tuple[float, float, float]  # evergy loss over time : ax^2, where 'a' is the loss factor
 	vision: tuple[int, int, int]  # square or circle ?
@@ -86,7 +85,6 @@ class Simulation:
 		self.speed = data['speed']
 		self.damage = data['damage']
 		self.steal = data['steal']
-		self.range = data['range']
 		self.energy = data['energy']
 		self.loss_factor = data['loss_factor']
 		self.vision = data['vision']

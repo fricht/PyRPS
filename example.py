@@ -16,13 +16,12 @@ class Sim:
 		self.screen = pygame.display.set_mode((2*self.size[0], 2*self.size[1]))
 		# setup simulation
 		data = {
-			'speed': (4, 4, 4),
-			'damage': (10, 10, 10),
-			'steal': (0.6, 0.6, 0.6),
-			'range': (2, 2, 2),
-			'energy': ((80, 120), (80, 120), (80, 120)),  # default energy, required energy to produce a child
-			'loss_factor': (0.01, 0.01, 0.01),
-			'vision': (5, 5, 5)
+			'speed': (6, 4, 3),
+			'damage': (8, 10, 14),
+			'steal': (0.7, 0.6, 0.9),
+			'energy': ((80, 120), (80, 120), (80, 140)),  # default energy, required energy to produce a child
+			'loss_factor': (0.016, 0.01, 0.01),
+			'vision': (7, 7, 8)
 		}
 		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, data)
 		self.log_0 = []

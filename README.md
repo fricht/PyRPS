@@ -10,12 +10,6 @@ Les librairies nécessaires à l'exécution de la simulation sont `pygame`, `mat
 > pip install pygame matplotlib numpy
 ```
 
-Sur Windows, il est nécessaire d'installer en plus `PyQt5` :
-
-```cmd
-> pip install PyQt5
-```
-
 # Simulation
 
 Pour lancer la simulation :
@@ -25,3 +19,13 @@ Pour lancer la simulation :
 ```
 
 Cela ouvrira une fenêtre graphique pygame, contenant chaque camp représenté par des points de sa couleur (rouge, vert et bleu). Lorsqu'il ne reste plus qu'une seule couleur, fermer la fenêtre pygame affichera un graphique représentant l'évolution des trois population au cours du temps.
+
+# Résolution de problèmes
+
+## La fenêtre avec le graphique ne s'affiche pas
+
+Installer la librairie `PyQt5` :
+
+```cmd
+> pip install PyQt5
+```

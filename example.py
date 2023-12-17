@@ -15,6 +15,11 @@ class Sim:
 		self.size = size
 		self.running = True
 		self.screen = pygame.display.set_mode((2*self.size[0], 2*self.size[1]))
+		self.assets = {
+			'rock': pygame.image.load('assets/rock.png'),
+			'paper': pygame.image.load('assets/paper.png'),
+			'scissors': pygame.image.load('assets/scissors.png')
+		}
 		# setup simulation
 		self.data = {
 			'speed': (4, 4, 4),

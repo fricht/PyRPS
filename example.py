@@ -41,9 +41,9 @@ class Sim:
 				self.log_1[-1] += int(e.type == 1)
 				self.log_2[-1] += int(e.type == 2)
 				c = (
-					min(max(255 * int(e.type == 0) * (e.energy / self.data['energy'][0][1]), 50), 255),
-					min(max(255 * int(e.type == 1) * (e.energy / self.data['energy'][1][1]), 50), 255),
-					min(max(255 * int(e.type == 2) * (e.energy / self.data['energy'][2][1]), 50), 255)
+					min(max(255 * (e.energy / self.data['energy'][0][1]), 50), 255) * int(e.type == 0),
+					min(max(255 * (e.energy / self.data['energy'][1][1]), 50), 255) * int(e.type == 1),
+					min(max(255 * (e.energy / self.data['energy'][2][1]), 50), 255) * int(e.type == 2)
 				)
 				self.screen.set_at((2 * i[0], 2 * i[1]), c)
 				self.screen.set_at((2 * i[0]+1, 2 * i[1]), c)

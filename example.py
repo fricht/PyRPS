@@ -3,13 +3,14 @@ import matplotlib.pyplot as plt
 import pygame
 
 
-HIDDEN_NEURONS = [10, 10]
-INITIAL_POPULATION = 1000  # per entity type
+HIDDEN_NEURONS = []
+INITIAL_POPULATION = 500  # per entity type
 MAP_SIZE = (256, 256)
 
 
 class Sim:
 	def __init__(self, size):
+		# pygame stuff
 		pygame.init()
 		self.size = size
 		self.running = True
@@ -17,13 +18,21 @@ class Sim:
 		# setup simulation
 		data = {
 			'speed': (6, 4, 3),
-			'damage': (8, 10, 14),
-			'steal': (0.7, 0.6, 0.9),
-			'energy': ((80, 120), (80, 120), (80, 140)),  # default energy, required energy to produce a child
-			'loss_factor': (0.016, 0.01, 0.01),
+			'damage': (8, 10, 11),
+			'steal': (0.7, 0.6, 0.74),
+			'energy': ((60, 100), (80, 120), (100, 150)),  # default energy, required energy to produce a child
+			'loss_factor': (0.08, 0.08, 0.08),
 			'vision': (7, 7, 8)
 		}
-		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, data)
+		data_eq = {
+			'speed': (4, 4, 4),
+			'damage': (8, 8, 8),
+			'steal': (0.7, 0.7, 0.7),
+			'energy': ((70, 102), (70, 102), (70, 102)),  # default energy, required energy to produce a child
+			'loss_factor': (0.082, 0.082, 0.082),
+			'vision': (12, 12, 12)
+		}
+		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, data_eq)
 		self.log_0 = []
 		self.log_1 = []
 		self.log_2 = []

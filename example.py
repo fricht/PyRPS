@@ -2,12 +2,12 @@ import importlib.util
 try:
 	# replace this with your compiled file
 	spec = importlib.util.spec_from_file_location(
-	"simulation", "compiled.file.here"
+	"simulation", "your.compiled.code.here"
 	)
 	simulation = importlib.util.module_from_spec(spec)
 except ImportError:
 	print('WARNING : error while importing compiled file')
-	simulation = importlib.import_module("simulation.py")
+	simulation = importlib.import_module("simulation")
 import numpy as np
 import simulation
 import matplotlib.pyplot as plt
@@ -28,17 +28,19 @@ class Sim:
 		self.screen = pygame.display.set_mode((2*self.size[0], 2*self.size[1]))
 		# setup simulation
 		self.data = {
-			'speed': (4, 4, 4),
+			'speed': (5, 5, 5),
 			'damage': (8, 8, 8),
-			'steal': (0.64, 0.64, 0.64),
-			'energy': ((70, 106), (70, 106), (70, 106)),  # default energy, required energy to produce a child
-			'loss_factor': (0.095, 0.095, 0.095),
-			'vision': (12, 12, 12)
+			'steal': (0.7, 0.7, 0.7),
+			'energy': ((70, 100), (70, 100), (70, 100)),  # default energy, required energy to produce a child
+			'loss_factor': (0.07, 0.07, 0.07),
+			'vision': (12, 12, 12),
+			'range': (5, 5, 5)
 		}
 		self.simulation = simulation.Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
 		self.log_0 = []
 		self.log_1 = []
 		self.log_2 = []
+		self.log_t = []
 
 	def update(self):
 		self.screen.fill((10, 10, 10))
@@ -46,8 +48,10 @@ class Sim:
 		self.log_0.append(0)
 		self.log_1.append(0)
 		self.log_2.append(0)
+		self.log_t.append(0)
 		for i, e in np.ndenumerate(self.simulation.map):
 			if e is not None:
+				self.log_t[-1] += 1
 				self.log_0[-1] += int(e.type == 0)
 				self.log_1[-1] += int(e.type == 1)
 				self.log_2[-1] += int(e.type == 2)
@@ -72,10 +76,11 @@ class Sim:
 					self.running = False
 		pygame.quit()
 		iters = list(range(self.simulation.tick))
+		plt.plot(iters, self.log_t, color="grey")
 		plt.plot(iters, self.log_0, color="red")
 		plt.plot(iters, self.log_1, color="green")
 		plt.plot(iters, self.log_2, color="blue")
-		plt.legend(["red population", "green population", "blue population"])
+		plt.legend(["total", "red population", "green population", "blue population"])
 		plt.grid(True)
 		plt.xlabel("Ticks")
 		plt.ylabel("Amount")

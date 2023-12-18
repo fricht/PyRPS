@@ -31,9 +31,10 @@ class Sim:
 			'speed': (1, 1, 1),
 			'damage': (8, 8, 8),
 			'steal': (0.7, 0.7, 0.7),
-			'energy': ((70, 106), (70, 106), (70, 106)),  # default energy, required energy to produce a child
-			'loss_factor': (0.095, 0.095, 0.095),
-			'vision': (12, 12, 12)
+			'energy': ((70, 100), (70, 100), (70, 100)),  # default energy, required energy to produce a child
+			'loss_factor': (0.07, 0.07, 0.07),
+			'vision': (12, 12, 12),
+			'range': (5, 5, 5)
 		}
 		self.simulation = Simulation(map_size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
 

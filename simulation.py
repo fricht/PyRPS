@@ -4,7 +4,7 @@ import random
 
 
 class Network:
-	def __init__(self, params: list[int, list[int], int] | tuple[np.ndarray]) -> None:
+	def __init__(self: 'Network', params: list[int, list[int], int] | tuple[np.ndarray]) -> None:
 		if type(params) is list:
 			self.generate(params[0], params[1], params[2])
 		else:
@@ -79,12 +79,13 @@ class Simulation:
 	mutation_rate: float = 0.02
 	change_rate: float = 0.002
 	# Specie characteristics
-	speed: tuple[int, int, int]  # square or circle ?
+	speed: tuple[int, int, int]
 	damage: tuple[float, float, float]
 	steal: tuple[float, float, float]
 	energy: tuple[tuple[float, float], tuple[float, float], tuple[float, float]]  # born, need to reproduce
 	loss_factor: tuple[float, float, float]  # evergy loss over time : ax^2, where 'a' is the loss factor
-	vision: tuple[int, int, int]  # square or circle ?
+	vision: tuple[int, int, int]
+	range: tuple[int, int, int]
 
 	def __init__(self: 'Simulation', grid_size: tuple[int, int], pop_size: int, internal_neurons: list[int], data: dict[str, Any]) -> None:
 		self.speed = data['speed']
@@ -93,6 +94,7 @@ class Simulation:
 		self.energy = data['energy']
 		self.loss_factor = data['loss_factor']
 		self.vision = data['vision']
+		self.range = data['range']
 		self.grid_size: tuple[int, int] = grid_size
 		self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		self.tick: int = 0
@@ -130,7 +132,7 @@ class Simulation:
 		self.log_2.append(0)
 		self.log_t.append(0)
 		self.tick += 1
-		# (TODO) : change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
+		# change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
 		# collisions handled, maybe it's a solution
 		new_map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		for ind, entity in np.ndenumerate(self.map):

@@ -1,6 +1,7 @@
 from simulation import Simulation
 import matplotlib.pyplot as plt
 import tkinter as tk
+import numpy as np
 
 
 HIDDEN_NEURONS = []
@@ -61,6 +62,7 @@ class Sim:
 
 	def update(self):
 		self.simulation.step()
+		self.canvas.delete('all')
 		for i, e in np.ndenumerate(self.simulation.map):
 			if e is not None:
 				img = self.assets['rock']

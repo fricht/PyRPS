@@ -10,4 +10,9 @@ __pycache__/
 .vscode/
 
 # Test and debug code
-/local_tests.py
+local_tests.py
+
+# cython architecture-specific files
+simulation.c
+simulation.cpython-310-x86_64-linux-gnu.so
+build/

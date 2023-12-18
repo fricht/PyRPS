@@ -4,7 +4,7 @@ import random
 
 
 class Network:
-	def __init__(self, params: list[int, list[int], int] | tuple[np.ndarray]) -> None:
+	def __init__(self: 'Network', params: list[int, list[int], int] | tuple[np.ndarray]) -> None:
 		if type(params) is list:
 			self.generate(params[0], params[1], params[2])
 		else:
@@ -74,12 +74,13 @@ class Simulation:
 	mutation_rate: float = 0.01
 	change_rate: float = 0.001
 	# Specie characteristics
-	speed: tuple[int, int, int]  # square or circle ?
+	speed: tuple[int, int, int]
 	damage: tuple[float, float, float]
 	steal: tuple[float, float, float]
 	energy: tuple[tuple[float, float], tuple[float, float], tuple[float, float]]  # born, need to reproduce
 	loss_factor: tuple[float, float, float]  # evergy loss over time : ax^2, where 'a' is the loss factor
-	vision: tuple[int, int, int]  # square or circle ?
+	vision: tuple[int, int, int]
+	range: tuple[int, int, int]
 
 	def __init__(self: 'Simulation', grid_size: tuple[int, int], pop_size: int, internal_neurons: list[int], data: dict[str, Any]) -> None:
 		self.speed = data['speed']
@@ -88,6 +89,7 @@ class Simulation:
 		self.energy = data['energy']
 		self.loss_factor = data['loss_factor']
 		self.vision = data['vision']
+		self.range = data['range']
 		self.grid_size: tuple[int, int] = grid_size
 		self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		self.tick: int = 0
@@ -121,7 +123,7 @@ class Simulation:
 
 	def step(self: 'Simulation') -> None:
 		self.tick += 1
-		# (TODO) : change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
+		# change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
 		# collisions handled, maybe it's a solution
 		new_map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		for ind, entity in np.ndenumerate(self.map):
@@ -146,7 +148,7 @@ class Simulation:
 						if self.map[x, y] is None:
 							continue
 						d_e_type: int = self.delta_entity_type(entity.type, self.map[x, y].type)
-						if d_e_type == 2:
+						if d_e_type == 2 and abs(dx) <= self.range[entity.type] and abs(dy) <= self.range[entity.type]:
 							food.append([self.map[x, y], x**2 + y**2])
 						vision[t, 0] = d_e_type
 						vision[t, 1] = self.map[x, y].energy

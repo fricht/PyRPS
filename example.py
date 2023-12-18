@@ -1,9 +1,14 @@
-import importlib
+import importlib.util
 try:
 	# replace this with your compiled file
-	simulation = importlib.import_module("compiled_module.here")
+	spec = importlib.util.spec_from_file_location(
+	"simulation", "compiled.file.here"
+	)
+	simulation = importlib.util.module_from_spec(spec)
 except ImportError:
+	print('WARNING : error while importing compiled file')
 	simulation = importlib.import_module("simulation.py")
+import numpy as np
 import simulation
 import matplotlib.pyplot as plt
 import pygame

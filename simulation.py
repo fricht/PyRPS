@@ -70,9 +70,14 @@ class Entity:
 
 
 class Simulation:
+	# logs
+	log_0: list[int] = []
+	log_1: list[int] = []
+	log_2: list[int] = []
+	log_t: list[int] = []
 	# hyperparameters
-	mutation_rate: float = 0.01
-	change_rate: float = 0.001
+	mutation_rate: float = 0.02
+	change_rate: float = 0.002
 	# Specie characteristics
 	speed: tuple[int, int, int]
 	damage: tuple[float, float, float]
@@ -121,7 +126,11 @@ class Simulation:
 		else:
 			return 4 * int(e_ref > e) - 2
 
-	def step(self: 'Simulation') -> None:
+	def step(self: 'Simulation') -> bool:
+		self.log_0.append(0)
+		self.log_1.append(0)
+		self.log_2.append(0)
+		self.log_t.append(0)
 		self.tick += 1
 		# change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
 		# collisions handled, maybe it's a solution
@@ -142,17 +151,18 @@ class Simulation:
 						x: int = (ind[0] + dx) % self.grid_size[0]
 						y: int = (ind[1] + dy) % self.grid_size[1]
 						if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):  # should never be True
-							print('WTF !')
+							print('WTF ?!?')
 							vision[t, 0] = -1
 							continue
-						if self.map[x, y] is None:
+						elem: None | Entity = self.map[x, y]
+						if elem is None:
 							continue
-						d_e_type: int = self.delta_entity_type(entity.type, self.map[x, y].type)
+						d_e_type: int = self.delta_entity_type(entity.type, elem.type)
 						if d_e_type == 2 and abs(dx) <= self.range[entity.type] and abs(dy) <= self.range[entity.type]:
-							food.append([self.map[x, y], x**2 + y**2])
+							food.append([elem, x**2 + y**2])
 						vision[t, 0] = d_e_type
-						vision[t, 1] = self.map[x, y].energy
-						vision[t, 2] = self.map[x, y].signal * int(d_e_type == 1)
+						vision[t, 1] = elem.energy
+						vision[t, 2] = elem.signal * int(d_e_type == 1)
 				# process NN
 				action = entity.step(vision)
 				new_pos: tuple[int, int] = (  # used later
@@ -170,6 +180,10 @@ class Simulation:
 					)
 					if new_map[new_pos] is None:
 						new_map[new_pos] = child
+						self.log_t[-1] += 1
+						self.log_0[-1] += int(child.type == 0)
+						self.log_1[-1] += int(child.type == 1)
+						self.log_2[-1] += int(child.type == 2)
 					else:
 						possibles_pos: list[list[int, int, int]] = []
 						for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
@@ -183,11 +197,19 @@ class Simulation:
 						if len(possibles_pos) > 0:
 							possibles_pos.sort(key=lambda a: a[2])
 							new_map[possibles_pos[0][0], possibles_pos[0][1]] = child
+							self.log_t[-1] += 1
+							self.log_0[-1] += int(child.type == 0)
+							self.log_1[-1] += int(child.type == 1)
+							self.log_2[-1] += int(child.type == 2)
 						else:
 							entity.energy *= 2  # gives back energy
 				# apply movements
 				if new_map[new_pos] is None:
 					new_map[new_pos] = entity
+					self.log_t[-1] += 1
+					self.log_0[-1] += int(entity.type == 0)
+					self.log_1[-1] += int(entity.type == 1)
+					self.log_2[-1] += int(entity.type == 2)
 				else:
 					possibles_pos: list[list[int, int, int]] = []
 					for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
@@ -201,6 +223,10 @@ class Simulation:
 					if len(possibles_pos) > 0:
 						possibles_pos.sort(key=lambda a: a[2])
 						new_map[possibles_pos[0][0], possibles_pos[0][1]] = entity
+						self.log_t[-1] += 1
+						self.log_0[-1] += int(entity.type == 0)
+						self.log_1[-1] += int(entity.type == 1)
+						self.log_2[-1] += int(entity.type == 2)
 				# handle killing
 				if action[2] > 0.6 and len(food) > 0:
 					food.sort(key=lambda a: a[1])
@@ -209,3 +235,4 @@ class Simulation:
 			if entity is not None:
 				entity.sub_process()
 		self.map = new_map
+		return self.log_t[-1] > 0

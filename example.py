@@ -2,7 +2,7 @@ import importlib.util
 try:
 	# replace this with your compiled file
 	spec = importlib.util.spec_from_file_location(
-	"simulation", "your.compiled.code.here"
+	"simulation", "./simulation.cpython-310-x86_64-linux-gnu.so"
 	)
 	simulation = importlib.util.module_from_spec(spec)
 except ImportError:
@@ -37,24 +37,12 @@ class Sim:
 			'range': (5, 5, 5)
 		}
 		self.simulation = simulation.Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
-		self.log_0 = []
-		self.log_1 = []
-		self.log_2 = []
-		self.log_t = []
 
 	def update(self):
-		self.screen.fill((10, 10, 10))
-		self.simulation.step()
-		self.log_0.append(0)
-		self.log_1.append(0)
-		self.log_2.append(0)
-		self.log_t.append(0)
+		self.screen.fill((0, 0, 0))
+		continuing = self.simulation.step()
 		for i, e in np.ndenumerate(self.simulation.map):
 			if e is not None:
-				self.log_t[-1] += 1
-				self.log_0[-1] += int(e.type == 0)
-				self.log_1[-1] += int(e.type == 1)
-				self.log_2[-1] += int(e.type == 2)
 				c = (
 					min(max(255 * (e.energy / self.data['energy'][0][1]), 50), 255) * int(e.type == 0),
 					min(max(255 * (e.energy / self.data['energy'][1][1]), 50), 255) * int(e.type == 1),
@@ -64,8 +52,7 @@ class Sim:
 				self.screen.set_at((2 * i[0]+1, 2 * i[1]), c)
 				self.screen.set_at((2 * i[0], 2 * i[1]+1), c)
 				self.screen.set_at((2 * i[0]+1, 2 * i[1]+1), c)
-		if self.log_0[-1] + self.log_1[-1] + self.log_2[-1] == 0:
-			self.running = False
+		self.running = continuing
 
 	def run(self):
 		while self.running:

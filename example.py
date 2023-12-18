@@ -35,7 +35,7 @@ class Sim:
 			'loss_factor': (0.095, 0.095, 0.095),
 			'vision': (12, 12, 12)
 		}
-		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
+		self.simulation = Simulation(map_size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
 
 	def load_image(self, path, size):
 			img = tk.PhotoImage(file=path)

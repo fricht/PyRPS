@@ -1,25 +1,29 @@
 from simulation import *
 import matplotlib.pyplot as plt
-import pygame
+import tkinter as tk
 
 
 HIDDEN_NEURONS = []
-INITIAL_POPULATION = 500  # per entity type
-MAP_SIZE = (256, 256)
+INITIAL_POPULATION = 20  # per entity type
+MAP_SIZE = (30, 30)
+TILE_SIZE = 15
 
 
 class Sim:
-	def __init__(self, size):
-		# pygame stuff
-		pygame.init()
-		self.size = size
+	def __init__(self, map_size, tile_size):
+		# tkinter stuff
 		self.running = True
-		self.screen = pygame.display.set_mode((2*self.size[0], 2*self.size[1]))
+		self.window = tk.Tk(className='PyRPS')
 		self.assets = {
-			'rock': pygame.image.load('assets/rock.png'),
-			'paper': pygame.image.load('assets/paper.png'),
-			'scissors': pygame.image.load('assets/scissors.png')
+			'rock': self.load_image('assets/rock.png', tile_size),
+			'paper': self.load_image('assets/paper.png', tile_size),
+			'scissors': self.load_image('assets/scissors.png', tile_size)
 		}
+		self.tile_size = tile_size
+		self.canvas = self.init_canvas(map_size, tile_size)
+		self.canvas.pack()
+		self.quit_button = tk.Button(self.window, text='Quitter', command=self.exit)
+		self.quit_button.pack()
 		# setup simulation
 		self.data = {
 			'speed': (4, 4, 4),
@@ -29,42 +33,51 @@ class Sim:
 			'loss_factor': (0.095, 0.095, 0.095),
 			'vision': (12, 12, 12)
 		}
-		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
+		self.simulation = Simulation(map_size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
 		self.log_0 = []
 		self.log_1 = []
 		self.log_2 = []
 
+	def load_image(self, path, size):
+		img = tk.PhotoImage(file=path)
+		subsample_x = int(img.width() / size)
+		subsample_y = int(img.height() / size)
+		return img.subsample(subsample_x, subsample_y)
+	
+	def init_canvas(self, map_size, tile_size):
+		width = map_size[0] * tile_size
+		height = map_size[1] * tile_size
+		return tk.Canvas(self.window, width=width, height=height)
+
+	def exit(self):
+		self.window.quit()
+		self.running = False
+
 	def update(self):
-		self.screen.fill((10, 10, 10))
 		self.simulation.step()
 		self.log_0.append(0)
 		self.log_1.append(0)
 		self.log_2.append(0)
+		self.canvas.delete('all')
 		for i, e in np.ndenumerate(self.simulation.map):
 			if e is not None:
 				self.log_0[-1] += int(e.type == 0)
 				self.log_1[-1] += int(e.type == 1)
 				self.log_2[-1] += int(e.type == 2)
-				c = (
-					min(max(255 * (e.energy / self.data['energy'][0][1]), 50), 255) * int(e.type == 0),
-					min(max(255 * (e.energy / self.data['energy'][1][1]), 50), 255) * int(e.type == 1),
-					min(max(255 * (e.energy / self.data['energy'][2][1]), 50), 255) * int(e.type == 2)
-				)
-				self.screen.set_at((2 * i[0], 2 * i[1]), c)
-				self.screen.set_at((2 * i[0]+1, 2 * i[1]), c)
-				self.screen.set_at((2 * i[0], 2 * i[1]+1), c)
-				self.screen.set_at((2 * i[0]+1, 2 * i[1]+1), c)
+				img = self.assets['rock']
+				if e.type == 1:
+					img = self.assets['paper']
+				elif e.type == 2:
+					img = self.assets['scissors']
+				self.canvas.create_image(i[0] * self.tile_size, i[1] * self.tile_size, image=img, anchor='nw')
 		if self.log_0[-1] + self.log_1[-1] + self.log_2[-1] == 0:
 			self.running = False
 
 	def run(self):
+		self.window.mainloop()
+		print('after mainloop')
 		while self.running:
 			self.update()
-			pygame.display.flip()
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					self.running = False
-		pygame.quit()
 		iters = list(range(self.simulation.tick))
 		plt.plot(iters, self.log_0, color="red")
 		plt.plot(iters, self.log_1, color="green")
@@ -76,4 +89,4 @@ class Sim:
 		plt.show()
 
 
-Sim(tuple(MAP_SIZE)).run()
+Sim(tuple(MAP_SIZE), TILE_SIZE).run()

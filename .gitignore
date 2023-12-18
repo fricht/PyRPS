@@ -1,6 +1,9 @@
 # Python
 __pycache__/
 
+# Cython
+build/
+*.pyd
 
 # PyCharm
 .idea/
@@ -9,4 +12,4 @@ __pycache__/
 .vscode/
 
 # Test and debug code
-/local_tests.py
+local_tests.py

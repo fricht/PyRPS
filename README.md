@@ -10,6 +10,16 @@ Les librairies nécessaires à l'exécution de la simulation sont `pygame`, `mat
 > pip install pygame matplotlib numpy
 ```
 
+## Compilation
+
+Pour améliorer les performances.
+
+```cmd
+> python setup.py build_ext --inplace
+```
+
+Dans `example.py` (l4), remplaçer l'import d'exemple par le module compilé.
+
 # Simulation
 
 Pour lancer la simulation :
@@ -24,7 +34,13 @@ Cela ouvrira une fenêtre graphique pygame, contenant chaque camp représenté p
 
 ## La fenêtre avec le graphique ne s'affiche pas
 
-Installer la librairie `PyQt5` :
+Si après la fin de la simulation, la fenêtre avec le graphique ne s'ouvre pas et que l'erreur suivante est affichée :
+
+```cmd
+UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+```
+
+Il faut installer la librairie `PyQt5` :
 
 ```cmd
 > pip install PyQt5

@@ -1,4 +1,4 @@
-from simulation import *
+from simulation import Simulation
 import matplotlib.pyplot as plt
 import tkinter as tk
 
@@ -35,16 +35,13 @@ class Sim:
 			'loss_factor': (0.095, 0.095, 0.095),
 			'vision': (12, 12, 12)
 		}
-		self.simulation = Simulation(map_size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
-		self.log_0 = []
-		self.log_1 = []
-		self.log_2 = []
+		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
 
 	def load_image(self, path, size):
-		img = tk.PhotoImage(file=path)
-		subsample_x = int(img.width() / size)
-		subsample_y = int(img.height() / size)
-		return img.subsample(subsample_x, subsample_y)
+			img = tk.PhotoImage(file=path)
+			subsample_x = int(img.width() / size)
+			subsample_y = int(img.height() / size)
+			return img.subsample(subsample_x, subsample_y)
 	
 	def init_canvas(self, map_size, tile_size):
 		width = map_size[0] * tile_size
@@ -63,31 +60,23 @@ class Sim:
 
 	def update(self):
 		self.simulation.step()
-		self.log_0.append(0)
-		self.log_1.append(0)
-		self.log_2.append(0)
-		self.canvas.delete('all')
 		for i, e in np.ndenumerate(self.simulation.map):
 			if e is not None:
-				self.log_0[-1] += int(e.type == 0)
-				self.log_1[-1] += int(e.type == 1)
-				self.log_2[-1] += int(e.type == 2)
 				img = self.assets['rock']
 				if e.type == 1:
 					img = self.assets['paper']
 				elif e.type == 2:
 					img = self.assets['scissors']
 				self.canvas.create_image(i[0] * self.tile_size, i[1] * self.tile_size, image=img, anchor='nw')
-		if self.log_0[-1] + self.log_1[-1] + self.log_2[-1] == 0:
-			self.running = False
 
 	def run(self):
 		self.window.mainloop()
 		iters = list(range(self.simulation.tick))
-		plt.plot(iters, self.log_0, color="red")
-		plt.plot(iters, self.log_1, color="green")
-		plt.plot(iters, self.log_2, color="blue")
-		plt.legend(["red population", "green population", "blue population"])
+		plt.plot(iters, self.simulation.log_t, color="grey")
+		plt.plot(iters, self.simulation.log_0, color="red")
+		plt.plot(iters, self.simulation.log_1, color="green")
+		plt.plot(iters, self.simulation.log_2, color="blue")
+		plt.legend(["total", "red population", "green population", "blue population"])
 		plt.grid(True)
 		plt.xlabel("Ticks")
 		plt.ylabel("Amount")

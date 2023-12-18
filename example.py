@@ -22,11 +22,13 @@ class Sim:
 		self.tile_size = tile_size
 		self.canvas = self.init_canvas(map_size, tile_size)
 		self.canvas.pack()
-		self.quit_button = tk.Button(self.window, text='Quitter', command=self.exit)
-		self.quit_button.pack()
+		self.btn_run_sim = tk.Button(text='Run', command=self.run_sim)
+		self.btn_stop_sim = tk.Button(text='Stop', command=self.stop_sim)
+		self.btn_stop_sim.pack()
+		self.btn_run_sim.pack()
 		# setup simulation
 		self.data = {
-			'speed': (4, 4, 4),
+			'speed': (1, 1, 1),
 			'damage': (8, 8, 8),
 			'steal': (0.7, 0.7, 0.7),
 			'energy': ((70, 106), (70, 106), (70, 106)),  # default energy, required energy to produce a child
@@ -48,10 +50,16 @@ class Sim:
 		width = map_size[0] * tile_size
 		height = map_size[1] * tile_size
 		return tk.Canvas(self.window, width=width, height=height)
-
-	def exit(self):
-		self.window.quit()
+	
+	def stop_sim(self):
 		self.running = False
+
+	def run_sim(self):
+		if not self.running:
+			self.running = True
+		if self.running:
+			self.update()
+			self.canvas.after(500, self.run_sim)
 
 	def update(self):
 		self.simulation.step()
@@ -75,9 +83,6 @@ class Sim:
 
 	def run(self):
 		self.window.mainloop()
-		print('after mainloop')
-		while self.running:
-			self.update()
 		iters = list(range(self.simulation.tick))
 		plt.plot(iters, self.log_0, color="red")
 		plt.plot(iters, self.log_1, color="green")

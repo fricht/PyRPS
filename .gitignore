@@ -1,11 +1,13 @@
 # Python
-
 __pycache__/
 
+# Cython
+build/
+*.pyd
 
 # PyCharm
 .idea/
 
 
 # Test and debug code
-/local_tests.py
+local_tests.py

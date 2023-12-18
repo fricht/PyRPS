@@ -1,4 +1,10 @@
-from simulation import *
+import importlib
+try:
+	# replace this with your compiled file
+	simulation = importlib.import_module("compiled_module.here")
+except ImportError:
+	simulation = importlib.import_module("simulation.py")
+import simulation
 import matplotlib.pyplot as plt
 import pygame
 
@@ -19,12 +25,12 @@ class Sim:
 		self.data = {
 			'speed': (4, 4, 4),
 			'damage': (8, 8, 8),
-			'steal': (0.7, 0.7, 0.7),
+			'steal': (0.64, 0.64, 0.64),
 			'energy': ((70, 106), (70, 106), (70, 106)),  # default energy, required energy to produce a child
 			'loss_factor': (0.095, 0.095, 0.095),
 			'vision': (12, 12, 12)
 		}
-		self.simulation = Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
+		self.simulation = simulation.Simulation(self.size, INITIAL_POPULATION, HIDDEN_NEURONS, self.data)
 		self.log_0 = []
 		self.log_1 = []
 		self.log_2 = []

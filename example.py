@@ -1,13 +1,3 @@
-import importlib.util
-try:
-	# replace this with your compiled file
-	spec = importlib.util.spec_from_file_location(
-	"simulation", "./simulation.cpython-310-x86_64-linux-gnu.so"
-	)
-	simulation = importlib.util.module_from_spec(spec)
-except ImportError:
-	print('WARNING : error while importing compiled file')
-	simulation = importlib.import_module("simulation")
 import numpy as np
 import simulation
 import matplotlib.pyplot as plt
@@ -15,8 +5,8 @@ import pygame
 
 
 HIDDEN_NEURONS = []
-INITIAL_POPULATION = 500  # per entity type
-MAP_SIZE = (256, 256)
+INITIAL_POPULATION = 200  # per entity type
+MAP_SIZE = (128, 128)
 
 
 class Sim:
@@ -29,10 +19,10 @@ class Sim:
 		# setup simulation
 		self.data = {
 			'speed': (5, 5, 5),
-			'damage': (8, 8, 8),
+			'damage': (20, 20, 20),
 			'steal': (0.7, 0.7, 0.7),
-			'energy': ((70, 100), (70, 100), (70, 100)),  # default energy, required energy to produce a child
-			'loss_factor': (0.07, 0.07, 0.07),
+			'energy': ((81, 101), (81, 101), (81, 101)),  # default energy, required energy to produce a child
+			'loss_factor': (0.06, 0.06, 0.06),
 			'vision': (12, 12, 12),
 			'range': (5, 5, 5)
 		}

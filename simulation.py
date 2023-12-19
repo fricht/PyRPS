@@ -2,13 +2,29 @@ from typing import Any
 import numpy as np
 import random
 
+from numba import jit, njit
+
+
+@njit()
+def activation(input_value: float) -> float:
+	"""
+	The activation function for the Network.
+
+	Parameters:
+		input_value: a float at which the activation function will be applied
+
+	Returns:
+		float, the result of the activation function
+	"""
+	return 1 / (1 + np.exp(- input_value))
+
 
 class Network:
 	"""
 	Neural Network (NN) class.
 	Used for the simulation.
 	"""
-	def __init__(self: 'Network', params: list[int, list[int], int] | tuple[np.ndarray]) -> None:
+	def __init__(self: 'Network', params: list[int, list[int], int] | tuple[np.ndarray[float]]) -> None:
 		"""
 		Initializes the Network Class
 
@@ -33,24 +49,12 @@ class Network:
 		Returns:
 			None
 		"""
-		params: list[np.ndarray] = []
+		params: list[np.ndarray[float]] = []
 		for layer, inputs in zip(hidden + [output_size], [input_size] + hidden):
 			params.append(np.random.normal(scale=2.0, size=(layer, inputs + 1)))
-		self.params: tuple[np.ndarray] = tuple(params)
+		self.params: tuple[np.ndarray[float]] = tuple(params)
 
-	def activation(self: 'Network', input_value: float) -> float:
-		"""
-		The activation function for the Network.
-
-		Parameters:
-			input_value: a float at which the activation function will be applied
-
-		Returns:
-			float, the result of the activation function
-		"""
-		return 1 / (1 + np.exp(- input_value))
-
-	def feed_forward(self: 'Network', inputs: np.ndarray) -> np.ndarray:
+	def feed_forward(self: 'Network', inputs: np.ndarray[int | float]) -> np.ndarray:
 		"""
 		Feed Forward the Network
 
@@ -60,12 +64,17 @@ class Network:
 		Returns:
 			a numpy array, the output of the Network.
 		"""
-		inputs = np.append(inputs, 1.0)
-		output: np.ndarray
-		for layer in self.params:
+		return self._feed_forward(self.params, inputs)
+
+	@staticmethod
+	@jit(nopython=True)
+	def _feed_forward(params: tuple[np.ndarray[float]], inputs: np.ndarray[int | float]) -> np.ndarray:
+		inputs: np.ndarray[int | float] = np.append(inputs, 1.0)
+		output: np.ndarray[float]
+		for layer in params:
 			output = np.empty(shape=(layer.shape[0]))
 			for n, cell in enumerate(layer):
-				output[n] = self.activation(np.dot(inputs, cell))
+				output[n] = activation(np.dot(inputs, cell))
 			inputs = np.append(output, 1.0)
 		return output
 
@@ -80,7 +89,7 @@ class Network:
 		Returns:
 			a new instance of the Network class.
 		"""
-		params: list[np.ndarray] = [arr.copy() for arr in self.params]
+		params: list[np.ndarray[float]] = [arr.copy() for arr in self.params]
 		for layer in params:
 			for ind, val in np.ndenumerate(layer):
 				n: float = random.random()
@@ -127,7 +136,7 @@ class Entity:
 		self.energy -= amount
 		return delta
 
-	def step(self: 'Entity', vision: np.ndarray) -> np.ndarray:
+	def step(self: 'Entity', vision: np.ndarray[int]) -> np.ndarray[float]:
 		"""
 		Apply a single step for the simulation for this Entity.
 
@@ -137,7 +146,7 @@ class Entity:
 		Returns:
 			numpy array, the actions taken by the entity
 		"""
-		net_response: np.ndarray = self.network.feed_forward(np.append(vision.flatten(), np.array([self.age, self.energy])))
+		net_response: np.ndarray[float] = self.network.feed_forward(np.append(vision.flatten(), np.array([self.age, self.energy])))
 		self.age += 1
 		self.energy -= self.loss * (self.age / 100) ** 2
 		self._signal = net_response[3]
@@ -205,7 +214,7 @@ class Simulation:
 		self.vision = data['vision']
 		self.range = data['range']
 		self.grid_size: tuple[int, int] = grid_size
-		self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
+		self.map: np.ndarray[object] = np.empty(shape=self.grid_size, dtype=object)
 		self.tick: int = 0
 		self.generate(pop_size, internal_neurons)
 
@@ -237,7 +246,9 @@ class Simulation:
 				random.randint(0, self.grid_size[0] - 1)
 			] = Entity(2, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
 
-	def delta_entity_type(self: 'Simulation', e_ref: int, e: int) -> int:
+	@staticmethod
+	@njit(cache=True)
+	def delta_entity_type(e_ref: int, e: int) -> int:
 		"""
 		Get the relation between 2 Entities (friends / prey / predator).
 
@@ -270,15 +281,15 @@ class Simulation:
 		self.log_2.append(0)
 		self.log_t.append(0)
 		self.tick += 1
-		# change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
+		# OLD : change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
 		# collisions handled, maybe it's a solution
-		new_map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
+		new_map: np.ndarray[object] = np.empty(shape=self.grid_size, dtype=object)
 		for ind, entity in np.ndenumerate(self.map):
 			if entity is not None:
 				if entity.energy <= 0:
 					continue
 				# compute vision
-				vision: np.ndarray = np.zeros(shape=((2 * self.vision[entity.type] + 1) ** 2 - 1, 3))
+				vision: np.ndarray[int] = np.zeros(shape=((2 * self.vision[entity.type] + 1) ** 2 - 1, 3))
 				food: list[list[object, int]] = []
 				t: int = -1  # tracker for vision index (simpler)
 				for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):

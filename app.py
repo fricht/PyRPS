@@ -2,7 +2,7 @@ import customtkinter as ctk
 import numpy as np
 from simulation import Simulation
 import tkinter as tk
-from PIL import ImageTk
+from PIL import ImageTk, Image
 
 class MenuFrame(ctk.CTkFrame):
     def __init__(self, master):
@@ -52,7 +52,7 @@ class App(ctk.CTk):
         self.canvas.grid(row=0, column=1)
 
         self.assets = {
-            'rock': self.load_image('assets/rock.png', tile_size),
+            'rock': self.load_image('assets/the_rock.png', tile_size),
             'paper': self.load_image('assets/paper.png', tile_size),
             'scissors': self.load_image('assets/scissors.png', tile_size)
         }
@@ -69,10 +69,8 @@ class App(ctk.CTk):
         self.menu.on_reset(self.reset_sim)
     
     def load_image(self, path, size):
-        img = tk.PhotoImage(file=path)
-        subsample_x = int(img.width() / size)
-        subsample_y = int(img.height() / size)
-        return img.subsample(subsample_x, subsample_y)
+        img = Image.open(path).resize((size, size))
+        return ImageTk.PhotoImage(img)
     
     def on_reset(self, fn):
         self.menu.on_reset(fn)
@@ -123,5 +121,5 @@ data = {
     'range': (5, 5, 5)
 }
 
-app = App(window_title='PyRPS Simulation', grid_size=(30, 30), tile_size=10, pop_size=30, layers=(10, 10), sim_data=data)
+app = App(window_title='PyRPS Simulation', grid_size=(30, 30), tile_size=20, pop_size=30, layers=(10, 10), sim_data=data)
 app.mainloop()

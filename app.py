@@ -2,6 +2,7 @@ import customtkinter as ctk
 import numpy as np
 from simulation import Simulation
 import tkinter as tk
+from PIL import ImageTk
 
 class MenuFrame(ctk.CTkFrame):
     def __init__(self, master):
@@ -42,6 +43,8 @@ class App(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
 
         self.title(window_title)
+        self.wm_iconbitmap()
+        self.iconphoto(True, ImageTk.PhotoImage(file='assets/the_rock.png'))
 
         self.menu = MenuFrame(master=self)
         self.menu.grid(row=0, column=0, stick='nsew')

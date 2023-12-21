@@ -15,7 +15,9 @@ class MenuFrame(ctk.CTkFrame):
         self.btn_stop = ctk.CTkButton(master=self, text='Stopper la simulation', bg_color=self.cget('fg_color'))
         self.btn_stop.grid(padx=20, pady=10)
         self.btn_reset = ctk.CTkButton(master=self, text='Réinitialiser', bg_color=self.cget('fg_color'))
-        self.btn_reset.grid(padx=20, pady=(10, 20))
+        self.btn_reset.grid(padx=20, pady=10)
+        self.btn_step = ctk.CTkButton(master=self, text='Step', bg_color=self.cget('fg_color'))
+        self.btn_step.grid(padx=20, pady=(10, 20))
 
     def on_run(self, fn):
         self.btn_run.configure(command=fn)

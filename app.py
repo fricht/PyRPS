@@ -4,6 +4,10 @@ from simulation import Simulation
 import tkinter as tk
 from PIL import ImageTk, Image
 
+# Paper 0
+# Rock 1
+# Scissors 2
+
 class MenuFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master=master, fg_color=master.cget('fg_color'))

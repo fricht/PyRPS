@@ -5,8 +5,8 @@ import pygame
 
 
 HIDDEN_NEURONS = []
-INITIAL_POPULATION = 200  # per entity type
-MAP_SIZE = (128, 128)
+INITIAL_POPULATION = 600  # per entity type
+MAP_SIZE = (256, 256)
 
 
 class Sim:
@@ -19,10 +19,10 @@ class Sim:
 		# setup simulation
 		self.data = {
 			'speed': (5, 5, 5),
-			'damage': (20, 20, 20),
-			'steal': (0.7, 0.7, 0.7),
-			'energy': ((81, 101), (81, 101), (81, 101)),  # default energy, required energy to produce a child
-			'loss_factor': (0.06, 0.06, 0.06),
+			'damage': (10, 10, 10),
+			'steal': (0.72, 0.72, 0.72),
+			'energy': ((70, 101), (70, 101), (70, 101)),  # default energy, required energy to produce a child
+			'loss_factor': (0.08, 0.08, 0.08),
 			'vision': (12, 12, 12),
 			'range': (5, 5, 5)
 		}

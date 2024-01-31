@@ -377,7 +377,7 @@ class Simulation:
 						self.log_1[-1] += int(entity.type == 1)
 						self.log_2[-1] += int(entity.type == 2)
 				# handle killing
-				if action[2] > 0.6 and len(food) > 0:
+				if action[2] > 0.9 and len(food) > 0:
 					food.sort(key=lambda a: a[1])
 					entity.energy += food[0][0].damage(self.damage[entity.type]) * self.steal[entity.type]
 		for _, entity in np.ndenumerate(new_map):

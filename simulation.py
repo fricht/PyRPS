@@ -1,27 +1,26 @@
-from typing import Any
 import numpy as np
 import random
 
 
 class Network:
-	def __init__(self: 'Network', params: list[int, list[int], int] | tuple[np.ndarray]) -> None:
+	def __init__(self, params):
 		if type(params) is list:
 			self.generate(params[0], params[1], params[2])
 		else:
 			self.params = params
 
-	def generate(self: 'Network', input_size: int, hidden: list[int], output_size: int) -> None:
-		params: list[np.ndarray] = []
+	def generate(self, input_size, hidden, output_size):
+		params = []
 		for layer, inputs in zip(hidden + [output_size], [input_size] + hidden):
 			params.append(np.random.normal(scale=2.0, size=(layer, inputs + 1)))
-		self.params: tuple[np.ndarray] = tuple(params)
+		self.params = tuple(params)
 
-	def activation(self: 'Network', input_value: float) -> float:
+	def activation(self, input_value):
 		return 1 / (1 + np.exp(- input_value))
 
-	def feed_forward(self: 'Network', inputs: np.ndarray) -> np.ndarray:
+	def feed_forward(self, inputs):
 		inputs = np.append(inputs, 1.0)
-		output: np.ndarray
+		output = None
 		for layer in self.params:
 			output = np.empty(shape=(layer.shape[0]))
 			for n, cell in enumerate(layer):
@@ -29,11 +28,11 @@ class Network:
 			inputs = np.append(output, 1.0)
 		return output
 
-	def child(self: 'Network', mut_rate, mod_rate) -> 'Network':
-		params: list[np.ndarray] = [arr.copy() for arr in self.params]
+	def child(self, mut_rate, mod_rate):
+		params = [arr.copy() for arr in self.params]
 		for layer in params:
 			for ind, val in np.ndenumerate(layer):
-				n: float = random.random()
+				n = random.random()
 				if n < mod_rate:
 					layer[ind] = random.uniform(-4, 4)
 				elif n < mut_rate:
@@ -42,22 +41,22 @@ class Network:
 
 
 class Entity:
-	def __init__(self: 'Entity', e_type: int, network: Network, energy: float, loss: float) -> None:
+	def __init__(self, e_type, network, energy, loss):
 		self.type = e_type
-		self.network: Network = network
-		self.energy: float = energy
-		self.loss: float = loss
-		self.signal: float = 0.0
-		self._signal: float = 0.0
-		self.age: int = 0
+		self.network = network
+		self.energy = energy
+		self.loss = loss
+		self.signal = 0.0
+		self._signal = 0.0
+		self.age = 0
 
-	def damage(self: 'Entity', amount: float) -> float:
-		delta: float = min(abs(self.energy), amount)
+	def damage(self, amount):
+		delta = min(abs(self.energy), amount)
 		self.energy -= amount
 		return delta
 
-	def step(self: 'Entity', vision: np.ndarray) -> np.ndarray:
-		net_response: np.ndarray = self.network.feed_forward(np.append(vision.flatten(), np.array([self.age, self.energy])))
+	def step(self, vision):
+		net_response = self.network.feed_forward(np.append(vision.flatten(), np.array([self.age, self.energy])))
 		self.age += 1
 		self.energy -= self.loss * (self.age / 100) ** 2
 		self._signal = net_response[3]
@@ -65,42 +64,35 @@ class Entity:
 		net_response[1] = net_response[1] * 2 - 1
 		return net_response
 
-	def sub_process(self: 'Entity') -> None:
+	def sub_process(self) -> None:
 		self.signal = self._signal
 
 
 class Simulation:
 	# logs
-	log_0: list[int] = []
-	log_1: list[int] = []
-	log_2: list[int] = []
-	log_t: list[int] = []
+	log_0 = []
+	log_1 = []
+	log_2 = []
+	log_t = []
 	# hyperparameters
-	mutation_rate: float = 0.02
-	change_rate: float = 0.002
-	# Specie characteristics
-	speed: tuple[int, int, int]
-	damage: tuple[float, float, float]
-	steal: tuple[float, float, float]
-	energy: tuple[tuple[float, float], tuple[float, float], tuple[float, float]]  # born, need to reproduce
-	loss_factor: tuple[float, float, float]  # evergy loss over time : ax^2, where 'a' is the loss factor
-	vision: tuple[int, int, int]
-	range: tuple[int, int, int]
+	mutation_rate = 0.02
+	change_rate = 0.002
 
-	def __init__(self: 'Simulation', grid_size: tuple[int, int], pop_size: int, internal_neurons: list[int], data: dict[str, Any]) -> None:
+	def __init__(self, grid_size, pop_size, internal_neurons, data):
+		# Specie characteristics
 		self.speed = data['speed']
 		self.damage = data['damage']
 		self.steal = data['steal']
-		self.energy = data['energy']
-		self.loss_factor = data['loss_factor']
+		self.energy = data['energy']  # born, need to reproduce
+		self.loss_factor = data['loss_factor'] # energy loss over time : ax^2, where 'a' is the loss factor
 		self.vision = data['vision']
 		self.range = data['range']
-		self.grid_size: tuple[int, int] = grid_size
+		self.grid_size = grid_size
 		self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
-		self.tick: int = 0
+		self.tick = 0
 		self.generate(pop_size, internal_neurons)
 
-	def generate(self: 'Simulation', pop_size: int, net_size: list[int]) -> None:
+	def generate(self, pop_size, net_size):
 		for _ in range(pop_size):
 			# Rock
 			self.map[
@@ -118,7 +110,7 @@ class Simulation:
 				random.randint(0, self.grid_size[0] - 1)
 			] = Entity(2, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
 
-	def delta_entity_type(self: 'Simulation', e_ref: int, e: int) -> int:
+	def delta_entity_type(self, e_ref, e):
 		if e_ref == e:
 			return 1
 		if abs(e_ref - e) == 1:
@@ -126,7 +118,7 @@ class Simulation:
 		else:
 			return 4 * int(e_ref > e) - 2
 
-	def step(self: 'Simulation') -> bool:
+	def step(self):
 		self.log_0.append(0)
 		self.log_1.append(0)
 		self.log_2.append(0)
@@ -134,30 +126,30 @@ class Simulation:
 		self.tick += 1
 		# change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
 		# collisions handled, maybe it's a solution
-		new_map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
+		new_map = np.empty(shape=self.grid_size, dtype=object)
 		for ind, entity in np.ndenumerate(self.map):
 			if entity is not None:
 				if entity.energy <= 0:
 					continue
 				# compute vision
-				vision: np.ndarray = np.zeros(shape=((2 * self.vision[entity.type] + 1) ** 2 - 1, 3))
-				food: list[list[object, int]] = []
-				t: int = -1  # tracker for vision index (simpler)
+				vision = np.zeros(shape=((2 * self.vision[entity.type] + 1) ** 2 - 1, 3))
+				food = []
+				t = -1  # tracker for vision index (simpler)
 				for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 					for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 						if dx == dy == 0:
 							continue
 						t += 1
-						x: int = (ind[0] + dx) % self.grid_size[0]
-						y: int = (ind[1] + dy) % self.grid_size[1]
+						x = (ind[0] + dx) % self.grid_size[0]
+						y = (ind[1] + dy) % self.grid_size[1]
 						if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):  # should never be True
 							print('WTF ?!?')
 							vision[t, 0] = -1
 							continue
-						elem: None | Entity = self.map[x, y]
+						elem = self.map[x, y]
 						if elem is None:
 							continue
-						d_e_type: int = self.delta_entity_type(entity.type, elem.type)
+						d_e_type = self.delta_entity_type(entity.type, elem.type)
 						if d_e_type == 2 and abs(dx) <= self.range[entity.type] and abs(dy) <= self.range[entity.type]:
 							food.append([elem, x**2 + y**2])
 						vision[t, 0] = d_e_type
@@ -165,14 +157,14 @@ class Simulation:
 						vision[t, 2] = elem.signal * int(d_e_type == 1)
 				# process NN
 				action = entity.step(vision)
-				new_pos: tuple[int, int] = (  # used later
+				new_pos = (  # used later
 					round(ind[0] + action[0] * self.speed[entity.type]) % self.grid_size[0],
 					round(ind[1] + action[1] * self.speed[entity.type]) % self.grid_size[1]
 				)
 				# handle newborn
 				if entity.energy >= self.energy[entity.type][1]:
 					entity.energy /= 2
-					child: Entity = Entity(
+					child = Entity(
 						entity.type,
 						entity.network.child(self.mutation_rate, self.change_rate),
 						self.energy[entity.type][0],
@@ -185,11 +177,11 @@ class Simulation:
 						self.log_1[-1] += int(child.type == 1)
 						self.log_2[-1] += int(child.type == 2)
 					else:
-						possibles_pos: list[list[int, int, int]] = []
+						possibles_pos = []
 						for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 							for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
-								x: int = (new_pos[0] + dx) % self.grid_size[0]
-								y: int = (new_pos[1] + dy) % self.grid_size[1]
+								x = (new_pos[0] + dx) % self.grid_size[0]
+								y = (new_pos[1] + dy) % self.grid_size[1]
 								if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):  # should never be True
 									continue
 								if new_map[x, y] is None:
@@ -211,11 +203,11 @@ class Simulation:
 					self.log_1[-1] += int(entity.type == 1)
 					self.log_2[-1] += int(entity.type == 2)
 				else:
-					possibles_pos: list[list[int, int, int]] = []
+					possibles_pos = []
 					for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
 						for dy in range(-self.vision[entity.type], self.vision[entity.type] + 1):
-							x: int = (new_pos[0] + dx) % self.grid_size[0]
-							y: int = (new_pos[1] + dy) % self.grid_size[1]
+							x = (new_pos[0] + dx) % self.grid_size[0]
+							y = (new_pos[1] + dy) % self.grid_size[1]
 							if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):  # should never be True
 								continue
 							if new_map[x, y] is None:

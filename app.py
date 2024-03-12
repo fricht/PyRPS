@@ -2,6 +2,7 @@ import customtkinter as ctk
 import numpy as np
 from simulation import Simulation
 from PIL import ImageTk, Image
+import matplotlib.pyplot as plt
 
 # Paper 0
 # Rock 1
@@ -70,6 +71,7 @@ class App(ctk.CTk):
         self.sim_data = sim_data
         self.sim_delta_time = delta_time
         self.sim = Simulation(tuple(grid_size), pop_size, list(layers), sim_data)
+        self.has_reset = False
         self.menu.on_run(self.launch_sim)
         self.menu.on_stop(self.stop_sim)
         self.menu.on_reset(self.reset_sim)
@@ -110,15 +112,28 @@ class App(ctk.CTk):
         self.sim = Simulation(tuple(self.sim_grid_size), self.sim_pop_size, list(self.sim_layers), self.sim_data)  # TODO améliorer le reset
     
     def reset_sim(self):
+        self.has_reset = True
         self.stop_sim()
         self.clear_canvas()
         self.load_new_sim()
+        iters = list(range(len(self.sim.log_t)))
+        plt.plot(iters, self.sim.log_t, color="grey")
+        plt.plot(iters, self.sim.log_0, color="red")
+        plt.plot(iters, self.sim.log_1, color="green")
+        plt.plot(iters, self.sim.log_2, color="blue")
+        plt.legend(["total", "red population", "green population", "blue population"])
+        plt.grid(True)
+        plt.xlabel("Ticks")
+        plt.ylabel("Amount")
+        plt.show()
     
     def clear_canvas(self):
         self.canvas.canvas.delete('all')
     
     def launch_sim(self):
-        self.load_new_sim()
+        if self.has_reset:
+            self.has_reset = False
+            self.load_new_sim()
         self.run_sim()
 
     def run_sim(self):

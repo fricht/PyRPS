@@ -117,6 +117,7 @@ class App(ctk.CTk):
         self.clear_canvas()
         self.load_new_sim()
         iters = list(range(len(self.sim.log_t)))
+        plt.clf()
         plt.plot(iters, self.sim.log_t, color="grey")
         plt.plot(iters, self.sim.log_0, color="red")
         plt.plot(iters, self.sim.log_1, color="green")

@@ -103,7 +103,6 @@ class Simulation:
 	log_2 = []
 	log_t = []
 	# hyperparameters
-	mutation_rate = 0.02
 	change_rate = 0.002
 
 	def __init__(self, grid_size, pop_size, internal_neurons, data):

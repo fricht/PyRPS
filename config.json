@@ -1,0 +1,20 @@
+{
+    "easter_egg": true,
+    "sim": {
+        "delta_time": 1,
+        "grid_size": [30, 30],
+        "tile_size": 10,
+        "pop_size": 20,
+        "layers": [10, 10],
+        "data": {
+            "speed": [1, 1, 1],
+            "damage": [8, 8, 8],
+            "steal": [0.7, 0.7, 0.7],
+            "energy": [[70, 101], [70, 101], [70, 101]],
+            "loss_factor": [0.06, 0.06, 0.06],
+            "vision": [12, 12, 12],
+            "range": [5, 5, 5],
+            "mod_scale": 0.002
+        }
+    }
+}

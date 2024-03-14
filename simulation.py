@@ -28,10 +28,10 @@ class Network:
 			inputs = np.append(output, 1.0)
 		return output
 
-	def child(self, mod_rate):
+	def child(self, mod_scale):
 		params = []
 		for layer in self.params:
-			params.append(np.add(layer, np.random.normal(scale=mod_rate, size=layer.shape)))
+			params.append(np.add(layer, np.random.normal(scale=mod_scale, size=layer.shape)))
 		return Network(params)
 
 
@@ -103,10 +103,10 @@ class Simulation:
 	log_2 = []
 	log_t = []
 	# hyperparameters
-	change_rate = 0.002
 
 	def __init__(self, grid_size, pop_size, internal_neurons, data):
 		# Specie characteristics
+		self.mod_scale = data['mod_scale']
 		self.speed = data['speed']
 		self.damage = data['damage']
 		self.steal = data['steal']
@@ -193,7 +193,7 @@ class Simulation:
 					entity.energy /= 2
 					child = Entity(
 						entity.type,
-						entity.network.child(self.change_rate),
+						entity.network.child(self.mod_scale),
 						self.energy[entity.type][0],
 						self.loss_factor[entity.type]
 					)

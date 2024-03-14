@@ -3,6 +3,7 @@ import numpy as np
 from simulation import Simulation
 from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
+import json
 
 # Paper 0
 # Rock 1
@@ -40,37 +41,40 @@ class CanvasFrame(ctk.CTkFrame):
         self.canvas.grid(padx=10, pady=10)
 
 class App(ctk.CTk):
-    def __init__(self, window_title, grid_size, tile_size, pop_size, layers, sim_data, delta_time):
+    def __init__(self, config):
         super().__init__()
+
+        self.config = config
 
         ctk.set_appearance_mode('dark')
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self.title(window_title)
+        self.title('PyRPS Simulation')
         self.wm_iconbitmap()
-        self.iconphoto(True, ImageTk.PhotoImage(file='assets/the_rock.png'))
+        self.iconphoto(True, ImageTk.PhotoImage(file='assets/logo.png'))
 
         self.menu = MenuFrame(master=self)
         self.menu.grid(row=0, column=0, stick='nsew')
-        self.canvas = CanvasFrame(master=self, tile_size=tile_size, grid_size=grid_size)
+        self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])
         self.canvas.grid(row=0, column=1)
 
+        rock_path = 'assets/the_rock.png' if config['easter_egg'] else 'assets/rock.png'
         self.assets = {
-            'rock': self.load_image('assets/the_rock.png', tile_size),
-            'paper': self.load_image('assets/paper.png', tile_size),
-            'scissors': self.load_image('assets/scissors.png', tile_size)
+            'rock': self.load_image(rock_path, config['sim']['tile_size']),
+            'paper': self.load_image('assets/paper.png', config['sim']['tile_size']),
+            'scissors': self.load_image('assets/scissors.png', config['sim']['tile_size'])
         }
 
         self._sim_running = True
-        self.sim_grid_size = grid_size
-        self.tile_size = tile_size
-        self.sim_pop_size = pop_size
-        self.sim_layers = layers
-        self.sim_data = sim_data
-        self.sim_delta_time = delta_time
-        self.sim = Simulation(tuple(grid_size), pop_size, list(layers), sim_data)
+        self.sim_grid_size = config['sim']['grid_size']
+        self.tile_size = config['sim']['tile_size']
+        self.sim_pop_size = config['sim']['pop_size']
+        self.sim_layers = config['sim']['layers']
+        self.sim_data = config['sim']['data']
+        self.sim_delta_time = config['sim']['delta_time']
+        self.sim = Simulation(tuple(config['sim']['grid_size']), config['sim']['pop_size'], list(config['sim']['layers']), config['sim']['data'])
         self.has_reset = False
         self.menu.on_run(self.launch_sim)
         self.menu.on_stop(self.stop_sim)
@@ -158,5 +162,8 @@ data = {
     'range': (5, 5, 5)
 }
 
-app = App(window_title='PyRPS Simulation', grid_size=(30, 30), tile_size=10, pop_size=20, layers=(10, 10), sim_data=data, delta_time=10)
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+app = App(config)
 app.mainloop()

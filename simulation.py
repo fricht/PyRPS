@@ -64,7 +64,7 @@ class Entity:
 		net_response[1] = net_response[1] * 2 - 1
 		return net_response
 
-	def sub_process(self) -> None:
+	def sub_process(self):
 		self.signal = self._signal
 
 

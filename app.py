@@ -152,16 +152,6 @@ class App(ctk.CTk):
     def stop_sim(self):
         self.sim_running = False
 
-data = {
-    'speed': (1, 1, 1),
-    'damage': (8, 8, 8),
-    'steal': (0.7, 0.7, 0.7),
-    'energy': ((70, 101), (70, 101), (70, 101)),  # default energy, required energy to produce a child
-    'loss_factor': (0.06, 0.06, 0.06),
-    'vision': (12, 12, 12),
-    'range': (5, 5, 5)
-}
-
 with open('config.json', 'r') as f:
     config = json.load(f)
 

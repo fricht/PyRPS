@@ -114,6 +114,7 @@ class App(ctk.CTk):
         self.clear_canvas()
         iters = list(range(len(self.sim.log_t)))
         plt.clf()
+        plt.title('Evolution des populations au cours du temps')
         plt.plot(iters, self.sim.log_t, color="grey")
         plt.plot(iters, self.sim.log_0, color="red")
         plt.plot(iters, self.sim.log_1, color="green")

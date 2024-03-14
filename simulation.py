@@ -97,14 +97,13 @@ class Entity:
 
 
 class Simulation:
-	# logs
-	log_0 = []
-	log_1 = []
-	log_2 = []
-	log_t = []
-	# hyperparameters
 
 	def __init__(self, grid_size, pop_size, internal_neurons, data):
+		# logs
+		self.log_0 = []
+		self.log_1 = []
+		self.log_2 = []
+		self.log_t = []
 		# Specie characteristics
 		self.mod_scale = data['mod_scale']
 		self.speed = data['speed']

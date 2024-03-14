@@ -70,7 +70,8 @@ class App(ctk.CTk):
             'scissors': self.load_image('assets/scissors.png', config['sim']['tile_size'])
         }
 
-        self._sim_running = True
+        self.sim_running = False
+        self.request_sim_stop = False
         self.sim_grid_size = config['sim']['grid_size']
         self.tile_size = config['sim']['tile_size']
         self.sim_pop_size = config['sim']['pop_size']
@@ -83,18 +84,6 @@ class App(ctk.CTk):
         self.menu.on_stop(self.stop_sim)
         self.menu.on_reset(self.reset_sim)
         self.menu.on_step(self.step_sim)
-    
-    @property
-    def sim_running(self):
-        return self._sim_running
-    
-    @sim_running.setter
-    def sim_running(self, value):
-        if value:
-            self.menu.run_strvar.set('Relancer la simulation')
-        else:
-            self.menu.run_strvar.set('Lancer la simulation')
-        self._sim_running = value
 
     def load_image(self, path, size):
         img = Image.open(path).resize((size, size))
@@ -120,10 +109,9 @@ class App(ctk.CTk):
         self.sim = Simulation(tuple(self.sim_grid_size), self.sim_pop_size, list(self.sim_layers), self.sim_data)  # TODO améliorer le reset
     
     def reset_sim(self):
-        self.has_reset = True
         self.stop_sim()
+        self.has_reset = True
         self.clear_canvas()
-        self.load_new_sim()
         iters = list(range(len(self.sim.log_t)))
         plt.clf()
         plt.plot(iters, self.sim.log_t, color="grey")
@@ -135,26 +123,31 @@ class App(ctk.CTk):
         plt.xlabel("Ticks")
         plt.ylabel("Amount")
         plt.show()
+        self.load_new_sim()
     
     def clear_canvas(self):
         self.canvas.canvas.delete('all')
     
     def launch_sim(self):
+        if self.sim_running:
+            return
         if self.has_reset:
             self.has_reset = False
             self.load_new_sim()
         self.run_sim()
 
     def run_sim(self):
-        if self.sim_running:
-            self.sim_running = self.sim.step()
-            self.update_canvas()
-            self.after(self.sim_delta_time, self.run_sim)
-        else:
-            self.sim_running = True
+        if self.request_sim_stop:
+            self.request_sim_stop = False
+            self.sim_running = False
+            return
+        self.sim_running = self.sim.step()
+        self.update_canvas()
+        self.after(self.sim_delta_time, self.run_sim)
 
     def stop_sim(self):
-        self.sim_running = False
+        if self.sim_running:
+            self.request_sim_stop = True
     
     def step_sim(self):
         if self.sim_running:
@@ -162,7 +155,7 @@ class App(ctk.CTk):
         if self.has_reset:
             self.has_reset = False
             self.load_new_sim()
-        self.sim_running = self.sim.step()
+        self.sim.step()
         self.update_canvas()
 
 with open('config.json', 'r') as f:

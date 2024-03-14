@@ -3,8 +3,8 @@ import random
 
 
 class Network:
-	def __init__(self, params):
-		if type(params) is list:
+	def __init__(self, params, gen=False):
+		if gen:
 			self.generate(params[0], params[1], params[2])
 		else:
 			self.params = params
@@ -13,7 +13,7 @@ class Network:
 		params = []
 		for layer, inputs in zip(hidden + [output_size], [input_size] + hidden):
 			params.append(np.random.normal(scale=2.0, size=(layer, inputs + 1)))
-		self.params = tuple(params)
+		self.params = params
 
 	def activation(self, input_value):
 		return 1 / (1 + np.exp(- input_value))
@@ -28,16 +28,44 @@ class Network:
 			inputs = np.append(output, 1.0)
 		return output
 
-	def child(self, mut_rate, mod_rate):
-		params = [arr.copy() for arr in self.params]
-		for layer in params:
-			for ind, val in np.ndenumerate(layer):
-				n = random.random()
-				if n < mod_rate:
-					layer[ind] = random.uniform(-4, 4)
-				elif n < mut_rate:
-					layer[ind] = val + random.random()
-		return Network(tuple(params))
+	def child(self, mod_rate):
+		params = []
+		for layer in self.params:
+			params.append(np.add(layer, np.random.normal(scale=mod_rate, size=layer.shape)))
+		return Network(params)
+
+
+# why the fuck is numpy slower than python iterations ???
+# class _Network:
+# 	def __init__(self, params, gen=False):
+# 		if gen:
+# 			self.generate(params[0], params[1], params[2])
+# 		else:
+# 			self.params = params
+
+# 	def generate(self, input_size, hidden, output_size):
+# 		params = []
+# 		for layer, inputs in zip(hidden + [output_size], [input_size] + hidden):
+# 			params.append(np.random.normal(scale=2.0, size=(inputs + 1, layer)))
+# 		self.params = params
+
+# 	@np.vectorize
+# 	def activation(input_value):
+# 		return 1 / (1 + np.exp(- input_value))
+
+# 	def feed_forward(self, inputs):
+# 		inputs = np.array([np.append(inputs, 1.0)])
+# 		output = None
+# 		for layer in self.params:
+# 			output = Network.activation(np.matmul(inputs, layer))
+# 			inputs = np.append(output, 1.0)
+# 		return output
+
+# 	def child(self, mut_rate, mod_rate):
+# 		params = []
+# 		for layer in self.params:
+# 			params.append(np.add(layer, np.random.normal(scale=mod_rate, size=layer.shape)))
+# 		return Network(params)
 
 
 class Entity:
@@ -98,17 +126,17 @@ class Simulation:
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(0, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[0][0], self.loss_factor[0])
+			] = Entity(0, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[0][0], self.loss_factor[0])
 			# Paper
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(1, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[1][0], self.loss_factor[1])
+			] = Entity(1, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[1][0], self.loss_factor[1])
 			# Scissors
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(2, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
+			] = Entity(2, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[2][0], self.loss_factor[2])
 
 	def delta_entity_type(self, e_ref, e):
 		if e_ref == e:
@@ -166,7 +194,7 @@ class Simulation:
 					entity.energy /= 2
 					child = Entity(
 						entity.type,
-						entity.network.child(self.mutation_rate, self.change_rate),
+						entity.network.child(self.change_rate),
 						self.energy[entity.type][0],
 						self.loss_factor[entity.type]
 					)

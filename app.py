@@ -32,6 +32,9 @@ class MenuFrame(ctk.CTkFrame):
 
     def on_reset(self, fn):
         self.btn_reset.configure(command=fn)
+    
+    def on_step(self, fn):
+        self.btn_step.configure(command=fn)
 
 class CanvasFrame(ctk.CTkFrame):
     def __init__(self, master, grid_size, tile_size):
@@ -79,6 +82,7 @@ class App(ctk.CTk):
         self.menu.on_run(self.launch_sim)
         self.menu.on_stop(self.stop_sim)
         self.menu.on_reset(self.reset_sim)
+        self.menu.on_step(self.step_sim)
     
     @property
     def sim_running(self):
@@ -151,6 +155,15 @@ class App(ctk.CTk):
 
     def stop_sim(self):
         self.sim_running = False
+    
+    def step_sim(self):
+        if self.sim_running:
+            return
+        if self.has_reset:
+            self.has_reset = False
+            self.load_new_sim()
+        self.sim_running = self.sim.step()
+        self.update_canvas()
 
 with open('config.json', 'r') as f:
     config = json.load(f)

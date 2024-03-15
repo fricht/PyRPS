@@ -117,10 +117,10 @@ class App(ctk.CTk):
         plt.plot(iters, self.sim.log_0, color="red")
         plt.plot(iters, self.sim.log_1, color="green")
         plt.plot(iters, self.sim.log_2, color="blue")
-        plt.legend(["total", "red population", "green population", "blue population"])
+        plt.legend(["Total", "Feuille", "Pierre", "Ciseaux"])
         plt.grid(True)
-        plt.xlabel("Ticks")
-        plt.ylabel("Amount")
+        plt.xlabel("Temps")
+        plt.ylabel("Nombre d'individus")
         plt.show()
         self.load_new_sim()
     

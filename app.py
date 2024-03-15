@@ -13,9 +13,7 @@ class MenuFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
 
-        self.run_strvar = ctk.StringVar(master=self, value='Lancer la simulation')
-
-        self.btn_run = ctk.CTkButton(master=self, textvariable=self.run_strvar, bg_color=self.cget('fg_color'))
+        self.btn_run = ctk.CTkButton(master=self, text='Lancer la simulation', bg_color=self.cget('fg_color'))
         self.btn_run.grid(padx=20, pady=(20, 10))
         self.btn_stop = ctk.CTkButton(master=self, text='Stopper la simulation', bg_color=self.cget('fg_color'))
         self.btn_stop.grid(padx=20, pady=10)

@@ -135,21 +135,17 @@ class Simulation:
 
 	def generate(self, pop_size, net_size):
 		for _ in range(pop_size):
-			# Rock
-			self.map[
-				random.randint(0, self.grid_size[0] - 1),
-				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(EntityTypes.ROCK, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[0][0], self.loss_factor[0])
-			# Paper
-			self.map[
-				random.randint(0, self.grid_size[0] - 1),
-				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(EntityTypes.PAPER, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[1][0], self.loss_factor[1])
-			# Scissors
-			self.map[
-				random.randint(0, self.grid_size[0] - 1),
-				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(EntityTypes.SCISSORS, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[2][0], self.loss_factor[2])
+			rock = Entity(EntityTypes.ROCK, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[0][0], self.loss_factor[0])
+			paper = Entity(EntityTypes.PAPER, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[1][0], self.loss_factor[1])
+			scissors = Entity(EntityTypes.SCISSORS, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[2][0], self.loss_factor[2])
+			self.place_entity_random(rock)
+			self.place_entity_random(paper)
+			self.place_entity_random(scissors)
+
+	def place_entity_random(self, entity):
+		x = random.randint(0, self.grid_size[0] - 1)
+		y = random.randint(0, self.grid_size[0] - 1)
+		self.map[x, y] = entity
 
 	def delta_entity_type(self, e_ref, e):
 		if e_ref == e:

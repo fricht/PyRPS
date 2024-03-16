@@ -1,6 +1,10 @@
 import numpy as np
 import random
 
+class EntityTypes:
+    PAPER = 0
+    ROCK = 1
+    SCISSORS = 2
 
 class Network:
 	def __init__(self, params, gen=False):
@@ -69,8 +73,8 @@ class Network:
 
 
 class Entity:
-	def __init__(self, e_type, network, energy, loss):
-		self.type = e_type
+	def __init__(self, type, network, energy, loss):
+		self.type = type
 		self.network = network
 		self.energy = energy
 		self.loss = loss
@@ -124,17 +128,17 @@ class Simulation:
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(0, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[0][0], self.loss_factor[0])
+			] = Entity(EntityTypes.ROCK, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[0][0], self.loss_factor[0])
 			# Paper
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(1, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[1][0], self.loss_factor[1])
+			] = Entity(EntityTypes.PAPER, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[1][0], self.loss_factor[1])
 			# Scissors
 			self.map[
 				random.randint(0, self.grid_size[0] - 1),
 				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(2, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[2][0], self.loss_factor[2])
+			] = Entity(EntityTypes.SCISSORS, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[2][0], self.loss_factor[2])
 
 	def delta_entity_type(self, e_ref, e):
 		if e_ref == e:

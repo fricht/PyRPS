@@ -1,13 +1,9 @@
 import customtkinter as ctk
 import numpy as np
-from simulation import Simulation
+from simulation import Simulation, EntityTypes
 from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import json
-
-# Paper 0
-# Rock 1
-# Scissors 2
 
 class MenuFrame(ctk.CTkFrame):
     def __init__(self, master):
@@ -77,7 +73,6 @@ class App(ctk.CTk):
         self.sim_data = config['sim']['data']
         self.sim_delta_time = config['sim']['delta_time']
         self.sim = Simulation(tuple(config['sim']['grid_size']), config['sim']['pop_size'], list(config['sim']['layers']), config['sim']['data'])
-        self.has_reset = False
         self.menu.on_run(self.launch_sim)
         self.menu.on_stop(self.stop_sim)
         self.menu.on_reset(self.reset_sim)
@@ -95,11 +90,11 @@ class App(ctk.CTk):
         for i, e in np.ndenumerate(self.sim.map):
             if e is not None:
                 img = None
-                if e.type == 0:
+                if e.type == EntityTypes.PAPER:
                     img = self.assets['paper']
-                if e.type == 1:
+                if e.type == EntityTypes.ROCK:
                     img = self.assets['rock']
-                elif e.type == 2:
+                elif e.type == EntityTypes.SCISSORS:
                     img = self.assets['scissors']
                 self.canvas.canvas.create_image(i[0] * self.tile_size, i[1] * self.tile_size, image=img, anchor='nw')
     
@@ -108,8 +103,11 @@ class App(ctk.CTk):
     
     def reset_sim(self):
         self.stop_sim()
-        self.has_reset = True
         self.clear_canvas()
+        self.show_plot()
+        self.load_new_sim()
+    
+    def show_plot(self):
         iters = list(range(len(self.sim.log_t)))
         plt.clf()
         plt.title('Evolution des populations au cours du temps')
@@ -122,7 +120,6 @@ class App(ctk.CTk):
         plt.xlabel("Temps")
         plt.ylabel("Nombre d'individus")
         plt.show()
-        self.load_new_sim()
     
     def clear_canvas(self):
         self.canvas.canvas.delete('all')
@@ -130,9 +127,6 @@ class App(ctk.CTk):
     def launch_sim(self):
         if self.sim_running:
             return
-        if self.has_reset:
-            self.has_reset = False
-            self.load_new_sim()
         self.run_sim()
 
     def run_sim(self):
@@ -151,9 +145,6 @@ class App(ctk.CTk):
     def step_sim(self):
         if self.sim_running:
             return
-        if self.has_reset:
-            self.has_reset = False
-            self.load_new_sim()
         self.sim.step()
         self.update_canvas()
 

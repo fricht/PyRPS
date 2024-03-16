@@ -118,9 +118,20 @@ class Simulation:
 		self.vision = data['vision']
 		self.range = data['range']
 		self.grid_size = grid_size
+		self.pop_size = pop_size
+		self.internal_neurons = internal_neurons
 		self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		self.tick = 0
 		self.generate(pop_size, internal_neurons)
+	
+	def reset(self):
+		self.map = np.empty(shape=self.grid_size, dtype=object)
+		self.tick = 0
+		self.log_0 = []
+		self.log_1 = []
+		self.log_2 = []
+		self.log_t = []
+		self.generate(self.pop_size, self.internal_neurons)
 
 	def generate(self, pop_size, net_size):
 		for _ in range(pop_size):

@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import json
 
 class MenuFrame(ctk.CTkFrame):
+    '''
+    Classe pour gérer les boutons de contrôle de la simulation
+    '''
     def __init__(self, master):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
 
@@ -31,6 +34,9 @@ class MenuFrame(ctk.CTkFrame):
         self.btn_step.configure(command=fn)
 
 class CanvasFrame(ctk.CTkFrame):
+    '''
+    Classe pour gérer l'affichage de la simulation
+    '''
     def __init__(self, master, grid_size, tile_size):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
 
@@ -38,6 +44,9 @@ class CanvasFrame(ctk.CTkFrame):
         self.canvas.grid(padx=10, pady=10)
 
 class App(ctk.CTk):
+    '''
+    Classe principale de l'application
+    '''
     def __init__(self, config):
         super().__init__()
 
@@ -97,15 +106,12 @@ class App(ctk.CTk):
                 elif e.type == EntityTypes.SCISSORS:
                     img = self.assets['scissors']
                 self.canvas.canvas.create_image(i[0] * self.tile_size, i[1] * self.tile_size, image=img, anchor='nw')
-    
-    def load_new_sim(self):
-        self.sim = Simulation(tuple(self.sim_grid_size), self.sim_pop_size, list(self.sim_layers), self.sim_data)  # TODO améliorer le reset
-    
+
     def reset_sim(self):
         self.stop_sim()
         self.clear_canvas()
         self.show_plot()
-        self.load_new_sim()
+        self.sim.reset()
     
     def show_plot(self):
         iters = list(range(len(self.sim.log_t)))

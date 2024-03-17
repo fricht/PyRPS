@@ -1,6 +1,10 @@
 import numpy as np
 import random
 
+class EntityTypes:
+    PAPER = 0
+    ROCK = 1
+    SCISSORS = 2
 
 class Network:
 	def __init__(self, params, gen=False):
@@ -28,10 +32,10 @@ class Network:
 			inputs = np.append(output, 1.0)
 		return output
 
-	def child(self, mod_rate):
+	def child(self, mod_scale):
 		params = []
 		for layer in self.params:
-			params.append(np.add(layer, np.random.normal(scale=mod_rate, size=layer.shape)))
+			params.append(np.add(layer, np.random.normal(scale=mod_scale, size=layer.shape)))
 		return Network(params)
 
 
@@ -69,8 +73,8 @@ class Network:
 
 
 class Entity:
-	def __init__(self, e_type, network, energy, loss):
-		self.type = e_type
+	def __init__(self, type, network, energy, loss):
+		self.type = type
 		self.network = network
 		self.energy = energy
 		self.loss = loss
@@ -92,22 +96,20 @@ class Entity:
 		net_response[1] = net_response[1] * 2 - 1
 		return net_response
 
-	def sub_process(self) -> None:
+	def sub_process(self):
 		self.signal = self._signal
 
 
 class Simulation:
-	# logs
-	log_0 = []
-	log_1 = []
-	log_2 = []
-	log_t = []
-	# hyperparameters
-	mutation_rate = 0.02
-	change_rate = 0.002
 
 	def __init__(self, grid_size, pop_size, internal_neurons, data):
+		# logs
+		self.log_0 = []
+		self.log_1 = []
+		self.log_2 = []
+		self.log_t = []
 		# Specie characteristics
+		self.mod_scale = data['mod_scale']
 		self.speed = data['speed']
 		self.damage = data['damage']
 		self.steal = data['steal']
@@ -116,27 +118,34 @@ class Simulation:
 		self.vision = data['vision']
 		self.range = data['range']
 		self.grid_size = grid_size
+		self.pop_size = pop_size
+		self.internal_neurons = internal_neurons
 		self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
 		self.tick = 0
 		self.generate(pop_size, internal_neurons)
+	
+	def reset(self):
+		self.map = np.empty(shape=self.grid_size, dtype=object)
+		self.tick = 0
+		self.log_0 = []
+		self.log_1 = []
+		self.log_2 = []
+		self.log_t = []
+		self.generate(self.pop_size, self.internal_neurons)
 
 	def generate(self, pop_size, net_size):
 		for _ in range(pop_size):
-			# Rock
-			self.map[
-				random.randint(0, self.grid_size[0] - 1),
-				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(0, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[0][0], self.loss_factor[0])
-			# Paper
-			self.map[
-				random.randint(0, self.grid_size[0] - 1),
-				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(1, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[1][0], self.loss_factor[1])
-			# Scissors
-			self.map[
-				random.randint(0, self.grid_size[0] - 1),
-				random.randint(0, self.grid_size[0] - 1)
-			] = Entity(2, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[2][0], self.loss_factor[2])
+			rock = Entity(EntityTypes.ROCK, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[0][0], self.loss_factor[0])
+			paper = Entity(EntityTypes.PAPER, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[1][0], self.loss_factor[1])
+			scissors = Entity(EntityTypes.SCISSORS, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[2][0], self.loss_factor[2])
+			self.place_entity_random(rock)
+			self.place_entity_random(paper)
+			self.place_entity_random(scissors)
+
+	def place_entity_random(self, entity):
+		x = random.randint(0, self.grid_size[0] - 1)
+		y = random.randint(0, self.grid_size[0] - 1)
+		self.map[x, y] = entity
 
 	def delta_entity_type(self, e_ref, e):
 		if e_ref == e:
@@ -194,7 +203,7 @@ class Simulation:
 					entity.energy /= 2
 					child = Entity(
 						entity.type,
-						entity.network.child(self.change_rate),
+						entity.network.child(self.mod_scale),
 						self.energy[entity.type][0],
 						self.loss_factor[entity.type]
 					)

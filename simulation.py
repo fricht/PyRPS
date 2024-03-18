@@ -73,8 +73,8 @@ class Network:
 
 
 class Entity:
-	def __init__(self, type, network, energy, loss):
-		self.type = type
+	def __init__(self, entity_type, network, energy, loss):
+		self.type = entity_type
 		self.network = network
 		self.energy = energy
 		self.loss = loss

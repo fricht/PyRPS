@@ -30,7 +30,7 @@ class MenuFrame(ctk.CTkFrame):
 
     def on_reset(self, fn):
         self.btn_reset.configure(command=fn)
-    
+
     def on_step(self, fn):
         self.btn_step.configure(command=fn)
 
@@ -66,14 +66,14 @@ class SingleAttributeEdit(ctk.CTkFrame):
         ctk.CTkLabel(self, textvariable=self.steal_var).grid(row=2, column=2)
 
         ctk.CTkLabel(self, text="Énergie de naissance").grid(row=3, column=0)
-        self.energy_var = ctk.IntVar()
-        ctk.CTkSlider(self, from_=1, to=200, variable=self.energy_var, number_of_steps=199).grid(row=3, column=1)
-        ctk.CTkLabel(self, textvariable=self.energy_var).grid(row=3, column=2)
+        self.energy_def_var = ctk.IntVar()
+        ctk.CTkSlider(self, from_=1, to=200, variable=self.energy_def_var, number_of_steps=199).grid(row=3, column=1)
+        ctk.CTkLabel(self, textvariable=self.energy_def_var).grid(row=3, column=2)
 
         ctk.CTkLabel(self, text="Énergie pour reproduction").grid(row=4, column=0)
-        self.energy_var = ctk.IntVar()
-        ctk.CTkSlider(self, from_=1, to=200, variable=self.energy_var, number_of_steps=199).grid(row=4, column=1)
-        ctk.CTkLabel(self, textvariable=self.energy_var).grid(row=4, column=2)
+        self.energy_child_var = ctk.IntVar()
+        ctk.CTkSlider(self, from_=1, to=200, variable=self.energy_child_var, number_of_steps=199).grid(row=4, column=1)
+        ctk.CTkLabel(self, textvariable=self.energy_child_var).grid(row=4, column=2)
 
         ctk.CTkLabel(self, text="Facteur de vieillissement").grid(row=5, column=0) # loss_factor
         self.aging_var = ctk.DoubleVar()
@@ -91,12 +91,32 @@ class SingleAttributeEdit(ctk.CTkFrame):
         ctk.CTkLabel(self, textvariable=self.range_var).grid(row=7, column=2)
 
     def get_values(self):
-        pass
+        return {
+            "speed": self.speed_var.get(),
+            "damage": self.damage_var.get(),
+            "steal": self.steal_var.get(),
+            "energy": [self.energy_def_var.get(), self.energy_child_var.get()],
+            "loss_factor": self.aging_var.get(),
+            "vision": self.vision_var.get(),
+            "range": self.range_var.get()
+        }
+
+    def set_values(self, data):
+        self.speed_var.set(data['speed'])
+        self.damage_var.set(data['damage'])
+        self.steal_var.set(data['steal'])
+        self.energy_def_var.set(data['energy'][0])
+        self.energy_child_var.set(data['energy'][1])
+        self.aging_var.set(data['loss_factor'])
+        self.vision_var.set(data['vision'])
+        self.range_var.set(data['range'])
 
 
 class EntityAttributes(ctk.CTkFrame):
-    def __init__(self, master):
+    def __init__(self, master, params_pointer):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
+
+        self.params = params_pointer
 
         self.section_label = ctk.CTkLabel(self, text="Paramètres", bg_color=self.cget('fg_color'))
         self.section_label.pack()
@@ -119,10 +139,38 @@ class EntityAttributes(ctk.CTkFrame):
         self.sissors_settings.pack()
 
     def reset_params(self):
-        raise NotImplementedError("Fonction reset pas encore implémentée")
+        rock = {}
+        paper = {}
+        sissors = {}
+        for k, v in self.params['sim']['data'].items():
+            if type(v) in {tuple, list}:
+                paper[k] = v[0]
+                rock[k] = v[1]
+                sissors[k] = v[2]
+        self.rock_settings.set_values(rock)
+        self.paper_settings.set_values(paper)
+        self.sissors_settings.set_values(sissors)
+
+    def get_data(self):
+        rock = self.rock_settings.get_values()
+        paper = self.paper_settings.get_values()
+        sissors = self.sissors_settings.get_values()
+        data = {k: [paper[k], rock[k], sissors[k]] for k in paper.keys() & rock.keys() & sissors.keys()}
+        data['mod_scale'] = 0.002 # TODO : implement this in general settings
+        return {
+            "easter_egg": True,
+            "sim": {
+                "delta_time": 1,
+                "grid_size": [30, 30],
+                "tile_size": 10,
+                "pop_size": 20,
+                "layers": [10, 10],
+                "data": data
+            }
+        }
 
     def save_params(self):
-        raise NotImplementedError("Fonction sauvegarde pas encore implémentée")
+        self.params = self.get_data()
 
 
 class App(ctk.CTk):
@@ -146,8 +194,9 @@ class App(ctk.CTk):
         self.sidebar_menu = ctk.CTkFrame(self)
         self.menu = MenuFrame(master=self.sidebar_menu)
         self.menu.pack()
-        self.settings = EntityAttributes(master=self.sidebar_menu)
+        self.settings = EntityAttributes(master=self.sidebar_menu, params_pointer=self.config)
         self.settings.pack()
+        self.settings.reset_params()
         self.sidebar_menu.grid(row=0, column=0, stick='nsew')
         self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])
         self.canvas.grid(row=0, column=1)
@@ -167,7 +216,7 @@ class App(ctk.CTk):
         self.sim_layers = config['sim']['layers']
         self.sim_data = config['sim']['data']
         self.sim_delta_time = config['sim']['delta_time']
-        self.sim = Simulation(tuple(config['sim']['grid_size']), config['sim']['pop_size'], list(config['sim']['layers']), config['sim']['data'])
+        self.sim = Simulation(config['sim']['grid_size'], config['sim']['pop_size'], config['sim']['layers'], config['sim']['data'])
         self.menu.on_run(self.launch_sim)
         self.menu.on_stop(self.stop_sim)
         self.menu.on_reset(self.reset_sim)
@@ -176,7 +225,7 @@ class App(ctk.CTk):
     def load_image(self, path, size):
         img = Image.open(path).resize((size, size))
         return ImageTk.PhotoImage(img)
-    
+
     def on_reset(self, fn):
         self.menu.on_reset(fn)
 
@@ -197,8 +246,10 @@ class App(ctk.CTk):
         self.stop_sim()
         self.clear_canvas()
         self.show_plot()
-        self.sim.reset()
-    
+        # using the user config
+        cfg = self.settings.get_data()
+        self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
+
     def show_plot(self):
         iters = list(range(len(self.sim.log_t)))
         plt.clf()
@@ -212,10 +263,10 @@ class App(ctk.CTk):
         plt.xlabel("Temps")
         plt.ylabel("Nombre d'individus")
         plt.show()
-    
+
     def clear_canvas(self):
         self.canvas.canvas.delete('all')
-    
+
     def launch_sim(self):
         if self.sim_running:
             return

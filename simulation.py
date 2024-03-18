@@ -107,7 +107,6 @@ class Entity:
 
 
 class Simulation:
-
     def __init__(self, grid_size, pop_size, internal_neurons, data):
         # logs
         self.log_0 = []
@@ -126,11 +125,11 @@ class Simulation:
         self.grid_size = grid_size
         self.pop_size = pop_size
         self.internal_neurons = internal_neurons
-        self.map: np.ndarray = np.empty(shape=self.grid_size, dtype=object)
+        self.map = np.empty(shape=self.grid_size, dtype=object)
         self.tick = 0
         self.generate(pop_size, internal_neurons)
-    
-    def reset(self):
+
+    def reset(self): # should be useless
         self.map = np.empty(shape=self.grid_size, dtype=object)
         self.tick = 0
         self.log_0 = []

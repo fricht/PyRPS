@@ -7,11 +7,15 @@ class EntityTypes:
     SCISSORS = 2
 
 class Network:
-	def __init__(self, params, gen=False):
-		if gen:
-			self.generate(params[0], params[1], params[2])
-		else:
-			self.params = params
+	def new(params):
+		net = Network()
+		net.generate(*params)
+		return net
+
+	def from_params(params):
+		net = Network()
+		net.params = params
+		return net
 
 	def generate(self, input_size, hidden, output_size):
 		params = []
@@ -36,7 +40,7 @@ class Network:
 		params = []
 		for layer in self.params:
 			params.append(np.add(layer, np.random.normal(scale=mod_scale, size=layer.shape)))
-		return Network(params)
+		return Network.from_params(params)
 
 
 # why the fuck is numpy slower than python iterations ???
@@ -135,9 +139,9 @@ class Simulation:
 
 	def generate(self, pop_size, net_size):
 		for _ in range(pop_size):
-			rock = Entity(EntityTypes.ROCK, Network([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[0][0], self.loss_factor[0])
-			paper = Entity(EntityTypes.PAPER, Network([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[1][0], self.loss_factor[1])
-			scissors = Entity(EntityTypes.SCISSORS, Network([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4], gen=True), self.energy[2][0], self.loss_factor[2])
+			rock = Entity(EntityTypes.ROCK, Network.new([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[0][0], self.loss_factor[0])
+			paper = Entity(EntityTypes.PAPER, Network.new([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[1][0], self.loss_factor[1])
+			scissors = Entity(EntityTypes.SCISSORS, Network.new([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
 			self.place_entity_random(rock)
 			self.place_entity_random(paper)
 			self.place_entity_random(scissors)

@@ -24,6 +24,8 @@ class Network:
 		self.params = params
 
 	def activation(self, input_value):
+		if abs(input_value) > 100:
+			return 1 - int(input_value < 0)
 		return 1 / (1 + np.exp(- input_value))
 
 	def feed_forward(self, inputs):

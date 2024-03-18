@@ -1,9 +1,11 @@
 import customtkinter as ctk
+from tkinter import ttk  # TODO : add this to requirements
 import numpy as np
 from simulation import Simulation, EntityTypes
 from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import json
+
 
 class MenuFrame(ctk.CTkFrame):
     '''
@@ -33,6 +35,7 @@ class MenuFrame(ctk.CTkFrame):
     def on_step(self, fn):
         self.btn_step.configure(command=fn)
 
+
 class CanvasFrame(ctk.CTkFrame):
     '''
     Classe pour gérer l'affichage de la simulation
@@ -42,6 +45,21 @@ class CanvasFrame(ctk.CTkFrame):
 
         self.canvas = ctk.CTkCanvas(master=self, width=grid_size[0] * tile_size, height=grid_size[1] * tile_size)
         self.canvas.grid(padx=10, pady=10)
+
+
+class EntityAttributes(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master=master, fg_color=master.cget('fg_color'))
+
+        self.section_label = ctk.CTkLabel(self, text="Paramètres", bg_color=self.cget('fg_color'))
+        self.section_label.pack()
+
+        self.params_select = ttk.Notebook(self)
+        self.params_select.add(ctk.CTkLabel(self.params_select, text='Hi'), text="Test")
+        self.params_select.add(ctk.CTkLabel(self.params_select, text='Hello'), text="Test2")
+        self.params_select.add(ctk.CTkLabel(self.params_select, text='World'), text="Test3")
+        self.params_select.pack()
+
 
 class App(ctk.CTk):
     '''
@@ -61,8 +79,12 @@ class App(ctk.CTk):
         self.wm_iconbitmap()
         self.iconphoto(True, ImageTk.PhotoImage(file='assets/logo.png'))
 
-        self.menu = MenuFrame(master=self)
-        self.menu.grid(row=0, column=0, stick='nsew')
+        self.sidebar_menu = ctk.CTkFrame(self)
+        self.menu = MenuFrame(master=self.sidebar_menu)
+        self.menu.pack()
+        self.settings = EntityAttributes(master=self.sidebar_menu)
+        self.settings.pack()
+        self.sidebar_menu.grid(row=0, column=0, stick='nsew')
         self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])
         self.canvas.grid(row=0, column=1)
 
@@ -153,6 +175,7 @@ class App(ctk.CTk):
             return
         self.sim.step()
         self.update_canvas()
+
 
 with open('config.json', 'r') as f:
     config = json.load(f)

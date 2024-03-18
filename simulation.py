@@ -114,6 +114,7 @@ class Simulation:
         self.log_2 = []
         self.log_t = []
         # Specie characteristics
+        print(data) # ???????????????????? why aren't they like i gave them ?
         self.mod_scale = data['mod_scale']
         self.speed = data['speed']
         self.damage = data['damage']

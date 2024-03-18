@@ -1,11 +1,6 @@
 import numpy as np
 import random
 
-class EntityTypes:
-    PAPER = 0
-    ROCK = 1
-    SCISSORS = 2
-
 class Network:
     def new(params):
         net = Network()
@@ -79,6 +74,11 @@ class Network:
 
 
 class Entity:
+    class Types:
+        PAPER = 0
+        ROCK = 1
+        SCISSORS = 2
+
     def __init__(self, entity_type, network, energy, loss):
         self.type = entity_type
         self.network = network
@@ -141,9 +141,9 @@ class Simulation:
 
     def generate(self, pop_size, net_size):
         for _ in range(pop_size):
-            rock = Entity(EntityTypes.ROCK, Network.new([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[0][0], self.loss_factor[0])
-            paper = Entity(EntityTypes.PAPER, Network.new([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[1][0], self.loss_factor[1])
-            scissors = Entity(EntityTypes.SCISSORS, Network.new([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
+            rock = Entity(Entity.Types.ROCK, Network.new([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[0][0], self.loss_factor[0])
+            paper = Entity(Entity.Types.PAPER, Network.new([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[1][0], self.loss_factor[1])
+            scissors = Entity(Entity.Types.SCISSORS, Network.new([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
             self.place_entity_random(rock)
             self.place_entity_random(paper)
             self.place_entity_random(scissors)

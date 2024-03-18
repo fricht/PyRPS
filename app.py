@@ -1,7 +1,6 @@
 import customtkinter as ctk
-from tkinter import ttk  # TODO : add this to requirements
 import numpy as np
-from simulation import Simulation, EntityTypes
+from simulation import Simulation, Entity
 from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import json
@@ -47,6 +46,54 @@ class CanvasFrame(ctk.CTkFrame):
         self.canvas.grid(padx=10, pady=10)
 
 
+class SingleAttributeEdit(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master=master, fg_color=master.cget('fg_color'))
+
+        ctk.CTkLabel(self, text="Vitesse").grid(row=0, column=0)
+        self.speed_var = ctk.IntVar()
+        ctk.CTkSlider(self, from_=1, to=10, variable=self.speed_var, number_of_steps=9).grid(row=0, column=1)
+        ctk.CTkLabel(self, textvariable=self.speed_var).grid(row=0, column=2)
+
+        ctk.CTkLabel(self, text="Dégats").grid(row=1, column=0)
+        self.damage_var = ctk.IntVar()
+        ctk.CTkSlider(self, from_=1, to=20, variable=self.damage_var, number_of_steps=19).grid(row=1, column=1)
+        ctk.CTkLabel(self, textvariable=self.damage_var).grid(row=1, column=2)
+
+        ctk.CTkLabel(self, text="Vol d'énergie").grid(row=2, column=0)
+        self.steal_var = ctk.DoubleVar()
+        ctk.CTkSlider(self, from_=0, to=1, variable=self.steal_var).grid(row=2, column=1)
+        ctk.CTkLabel(self, textvariable=self.steal_var).grid(row=2, column=2)
+
+        ctk.CTkLabel(self, text="Énergie de naissance").grid(row=3, column=0)
+        self.energy_var = ctk.IntVar()
+        ctk.CTkSlider(self, from_=1, to=200, variable=self.energy_var, number_of_steps=199).grid(row=3, column=1)
+        ctk.CTkLabel(self, textvariable=self.energy_var).grid(row=3, column=2)
+
+        ctk.CTkLabel(self, text="Énergie pour reproduction").grid(row=4, column=0)
+        self.energy_var = ctk.IntVar()
+        ctk.CTkSlider(self, from_=1, to=200, variable=self.energy_var, number_of_steps=199).grid(row=4, column=1)
+        ctk.CTkLabel(self, textvariable=self.energy_var).grid(row=4, column=2)
+
+        ctk.CTkLabel(self, text="Facteur de vieillissement").grid(row=5, column=0) # loss_factor
+        self.aging_var = ctk.DoubleVar()
+        ctk.CTkSlider(self, from_=0, to=1, variable=self.aging_var).grid(row=5, column=1)
+        ctk.CTkLabel(self, textvariable=self.aging_var).grid(row=5, column=2)
+
+        ctk.CTkLabel(self, text="Vision").grid(row=6, column=0)
+        self.vision_var = ctk.IntVar()
+        ctk.CTkSlider(self, from_=1, to=20, variable=self.vision_var, number_of_steps=19).grid(row=6, column=1)
+        ctk.CTkLabel(self, textvariable=self.vision_var).grid(row=6, column=2)
+
+        ctk.CTkLabel(self, text="Protée").grid(row=7, column=0)
+        self.range_var = ctk.IntVar()
+        ctk.CTkSlider(self, from_=1, to=20, variable=self.range_var, number_of_steps=19).grid(row=7, column=1)
+        ctk.CTkLabel(self, textvariable=self.range_var).grid(row=7, column=2)
+
+    def get_values(self):
+        pass
+
+
 class EntityAttributes(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
@@ -54,11 +101,28 @@ class EntityAttributes(ctk.CTkFrame):
         self.section_label = ctk.CTkLabel(self, text="Paramètres", bg_color=self.cget('fg_color'))
         self.section_label.pack()
 
-        self.params_select = ttk.Notebook(self)
-        self.params_select.add(ctk.CTkLabel(self.params_select, text='Hi'), text="Test")
-        self.params_select.add(ctk.CTkLabel(self.params_select, text='Hello'), text="Test2")
-        self.params_select.add(ctk.CTkLabel(self.params_select, text='World'), text="Test3")
+        self.actions_frame = ctk.CTkFrame(self)
+        ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=10, pady=10)
+        ctk.CTkButton(self.actions_frame, text="Sauver", command=self.save_params).grid(row=0, column=1, padx=10, pady=10)
+        self.actions_frame.pack()
+
+        self.params_select = ctk.CTkTabview(self, bg_color=self.cget('fg_color'))
         self.params_select.pack()
+
+        ctk.CTkLabel(self.params_select.add("Général"), text="Dommage, ça marche pas encore...").pack()
+
+        self.rock_settings = SingleAttributeEdit(self.params_select.add("Pierre"))
+        self.paper_settings = SingleAttributeEdit(self.params_select.add("Feuille"))
+        self.sissors_settings = SingleAttributeEdit(self.params_select.add("Ciseaux"))
+        self.rock_settings.pack()
+        self.paper_settings.pack()
+        self.sissors_settings.pack()
+
+    def reset_params(self):
+        raise NotImplementedError("Fonction reset pas encore implémentée")
+
+    def save_params(self):
+        raise NotImplementedError("Fonction sauvegarde pas encore implémentée")
 
 
 class App(ctk.CTk):
@@ -121,11 +185,11 @@ class App(ctk.CTk):
         for i, e in np.ndenumerate(self.sim.map):
             if e is not None:
                 img = None
-                if e.type == EntityTypes.PAPER:
+                if e.type == Entity.Types.PAPER:
                     img = self.assets['paper']
-                if e.type == EntityTypes.ROCK:
+                if e.type == Entity.Types.ROCK:
                     img = self.assets['rock']
-                elif e.type == EntityTypes.SCISSORS:
+                elif e.type == Entity.Types.SCISSORS:
                     img = self.assets['scissors']
                 self.canvas.canvas.create_image(i[0] * self.tile_size, i[1] * self.tile_size, image=img, anchor='nw')
 

@@ -10,7 +10,10 @@ class HelpWondow(ctk.CTkToplevel):
     def __init__(self, text, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title("Aide")
-        ctk.CTkLabel(self, text=text).pack(padx=20, pady=20)
+        self.textbox = ctk.CTkTextbox(self)
+        self.textbox.pack(padx=20, pady=20, fill=ctk.BOTH, expand=True)
+        self.textbox.insert('0.0', text=text)
+        self.textbox.configure(state=ctk.DISABLED)
 
 
 class FrameTitle(ctk.CTkLabel):
@@ -156,7 +159,18 @@ class EntityAttributes(ctk.CTkFrame):
 
     def on_help(self):
         if self.help_window is None or not self.help_window.winfo_exists():
-            self.toplevel_window = HelpWondow("Ceci est un message...\net il saute des lignes !!!")  # create window if its None or destroyed
+            message = """
+La simulation est asymétrique : chaque type d'entité peut avoir des caracteristiques différentes des autres
+
+
+Pour chaque type d'entité :
+
+• vitesse : la distance (par dimension = zone carrée) qu'une entité peut parcourir a chaque étape
+• dégats : le nombre max dénergie qu'une entité peut enlever à sa proie
+• vol d'énergie : la proportion d'énergie qu'une entité ...
+• 
+"""
+            self.toplevel_window = HelpWondow(message)
         else:
             self.toplevel_window.focus()  # if window exists focus it
 

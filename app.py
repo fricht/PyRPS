@@ -5,9 +5,18 @@ from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import json
 
+
+class HelpWondow(ctk.CTkToplevel):
+    def __init__(self, text, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.title("Aide")
+        ctk.CTkLabel(self, text=text).pack(padx=20, pady=20)
+
+
 class FrameTitle(ctk.CTkLabel):
     def __init__(self, master, text):
         super().__init__(master=master, text=text, font=('Arial', 16))
+
 
 class MenuFrame(ctk.CTkFrame):
     '''
@@ -120,10 +129,13 @@ class SingleAttributeEdit(ctk.CTkFrame):
 class EntityAttributes(ctk.CTkFrame):
     def __init__(self, master, params_pointer):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
-
         self.params = params_pointer
 
+        self.help_window = None
+
         FrameTitle(master=self, text="Paramètres").pack()
+
+        ctk.CTkButton(self, text='aide', command=self.on_help).pack(pady=10)
 
         self.actions_frame = ctk.CTkFrame(self)
         ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=10, pady=10)
@@ -141,6 +153,12 @@ class EntityAttributes(ctk.CTkFrame):
         self.rock_settings.pack()
         self.paper_settings.pack()
         self.sissors_settings.pack()
+
+    def on_help(self):
+        if self.help_window is None or not self.help_window.winfo_exists():
+            self.toplevel_window = HelpWondow("Ceci est un message...\net il saute des lignes !!!")  # create window if its None or destroyed
+        else:
+            self.toplevel_window.focus()  # if window exists focus it
 
     def reset_params(self):
         rock = {}

@@ -85,7 +85,7 @@ class SingleAttributeEdit(ctk.CTkFrame):
         ctk.CTkSlider(self, from_=1, to=20, variable=self.vision_var, number_of_steps=19).grid(row=6, column=1)
         ctk.CTkLabel(self, textvariable=self.vision_var).grid(row=6, column=2)
 
-        ctk.CTkLabel(self, text="Protée").grid(row=7, column=0)
+        ctk.CTkLabel(self, text="Portée").grid(row=7, column=0)
         self.range_var = ctk.IntVar()
         ctk.CTkSlider(self, from_=1, to=20, variable=self.range_var, number_of_steps=19).grid(row=7, column=1)
         ctk.CTkLabel(self, textvariable=self.range_var).grid(row=7, column=2)

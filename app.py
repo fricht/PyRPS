@@ -7,11 +7,16 @@ import json
 
 
 class HelpWondow(ctk.CTkToplevel):
+    '''
+    Wrapper pour afficher une fenaitre d'aide (ou autre)
+    '''
     def __init__(self, text, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title("Aide")
+        self.geometry('800x600')
         self.textbox = ctk.CTkTextbox(self)
         self.textbox.pack(padx=20, pady=20, fill=ctk.BOTH, expand=True)
+        # TODO : use monospace font ?
         self.textbox.insert('0.0', text=text)
         self.textbox.configure(state=ctk.DISABLED)
 
@@ -165,10 +170,19 @@ La simulation est asymétrique : chaque type d'entité peut avoir des caracteris
 
 Pour chaque type d'entité :
 
-• vitesse : la distance (par dimension = zone carrée) qu'une entité peut parcourir a chaque étape
-• dégats : le nombre max dénergie qu'une entité peut enlever à sa proie
-• vol d'énergie : la proportion d'énergie qu'une entité ...
-• 
+• vitesse :                   la distance (par dimension = zone carrée) qu'une entité peut parcourir a chaque étape
+• dégats :                    le nombre max dénergie qu'une entité peut enlever à sa proie
+• vol d'énergie :             la proportion d'énergie qu'une entité récupèrera apres avoir attaqué une autre (vol * dégats infligés)
+• energie de naissance :      l'énergie qu'une entité auras lors de sa naissance
+• energie pour reproduction : l'énergie nécessaire à une entité pour se reproduire
+• facteur de vieillissement : vitesse à laquelle une entité perd naturellement de l'énergie
+• vision :                    la distance (par dimension = zone carrée) à laquelle une entité peut voir
+• portée :                    la distance (par dimension = zone carrée) à laquelle une entité peut attaquer
+
+
+Paramètres généraux :
+• écart type de modification : écart type pour la loi normale utilisée pour la modification du réseau de neurone d'un enfant
+        plus ce nombre est grand, plus l'enfant sera différent de son parent
 """
             self.toplevel_window = HelpWondow(message)
         else:

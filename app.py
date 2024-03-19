@@ -16,7 +16,6 @@ class HelpWondow(ctk.CTkToplevel):
         self.geometry('800x600')
         self.textbox = ctk.CTkTextbox(self)
         self.textbox.pack(padx=20, pady=20, fill=ctk.BOTH, expand=True)
-        # TODO : use monospace font ?
         self.textbox.insert('0.0', text=text)
         self.textbox.configure(state=ctk.DISABLED)
 
@@ -31,7 +30,7 @@ class MenuFrame(ctk.CTkFrame):
     Classe pour gérer les boutons de contrôle de la simulation
     '''
     def __init__(self, master):
-        super().__init__(master=master, fg_color=master.cget('fg_color'))
+        super().__init__(master=master, fg_color=master.cget('fg_color'), border_width=2)
 
         FrameTitle(master=self, text='Simulation').grid(column=0, row=0, columnspan=2)
 
@@ -75,42 +74,42 @@ class SingleAttributeEdit(ctk.CTkFrame):
         ctk.CTkLabel(self, text="Vitesse").grid(row=0, column=0)
         self.speed_var = ctk.IntVar()
         ctk.CTkSlider(self, from_=1, to=10, variable=self.speed_var, number_of_steps=9).grid(row=0, column=1)
-        ctk.CTkLabel(self, textvariable=self.speed_var).grid(row=0, column=2)
+        ctk.CTkLabel(self, textvariable=self.speed_var, width=40).grid(row=0, column=2)
 
         ctk.CTkLabel(self, text="Dégats").grid(row=1, column=0)
         self.damage_var = ctk.IntVar()
         ctk.CTkSlider(self, from_=1, to=20, variable=self.damage_var, number_of_steps=19).grid(row=1, column=1)
-        ctk.CTkLabel(self, textvariable=self.damage_var).grid(row=1, column=2)
+        ctk.CTkLabel(self, textvariable=self.damage_var, width=40).grid(row=1, column=2)
 
         ctk.CTkLabel(self, text="Vol d'énergie").grid(row=2, column=0)
         self.steal_var = ctk.DoubleVar()
         ctk.CTkSlider(self, from_=0, to=1, variable=self.steal_var).grid(row=2, column=1)
-        ctk.CTkLabel(self, textvariable=self.steal_var).grid(row=2, column=2)
+        ctk.CTkLabel(self, textvariable=self.steal_var, width=40).grid(row=2, column=2)
 
         ctk.CTkLabel(self, text="Énergie de naissance").grid(row=3, column=0)
         self.energy_def_var = ctk.IntVar()
         ctk.CTkSlider(self, from_=1, to=200, variable=self.energy_def_var, number_of_steps=199).grid(row=3, column=1)
-        ctk.CTkLabel(self, textvariable=self.energy_def_var).grid(row=3, column=2)
+        ctk.CTkLabel(self, textvariable=self.energy_def_var, width=40).grid(row=3, column=2)
 
         ctk.CTkLabel(self, text="Énergie pour reproduction").grid(row=4, column=0)
         self.energy_child_var = ctk.IntVar()
         ctk.CTkSlider(self, from_=1, to=200, variable=self.energy_child_var, number_of_steps=199).grid(row=4, column=1)
-        ctk.CTkLabel(self, textvariable=self.energy_child_var).grid(row=4, column=2)
+        ctk.CTkLabel(self, textvariable=self.energy_child_var, width=40).grid(row=4, column=2)
 
         ctk.CTkLabel(self, text="Facteur de vieillissement").grid(row=5, column=0) # loss_factor
         self.aging_var = ctk.DoubleVar()
         ctk.CTkSlider(self, from_=0, to=1, variable=self.aging_var).grid(row=5, column=1)
-        ctk.CTkLabel(self, textvariable=self.aging_var).grid(row=5, column=2)
+        ctk.CTkLabel(self, textvariable=self.aging_var, width=40).grid(row=5, column=2)
 
         ctk.CTkLabel(self, text="Vision").grid(row=6, column=0)
         self.vision_var = ctk.IntVar()
         ctk.CTkSlider(self, from_=1, to=20, variable=self.vision_var, number_of_steps=19).grid(row=6, column=1)
-        ctk.CTkLabel(self, textvariable=self.vision_var).grid(row=6, column=2)
+        ctk.CTkLabel(self, textvariable=self.vision_var, width=40).grid(row=6, column=2)
 
         ctk.CTkLabel(self, text="Portée").grid(row=7, column=0)
         self.range_var = ctk.IntVar()
         ctk.CTkSlider(self, from_=1, to=20, variable=self.range_var, number_of_steps=19).grid(row=7, column=1)
-        ctk.CTkLabel(self, textvariable=self.range_var).grid(row=7, column=2)
+        ctk.CTkLabel(self, textvariable=self.range_var, width=40).grid(row=7, column=2)
 
     def get_values(self):
         return {
@@ -136,7 +135,7 @@ class SingleAttributeEdit(ctk.CTkFrame):
 
 class EntityAttributes(ctk.CTkFrame):
     def __init__(self, master, params_pointer):
-        super().__init__(master=master, fg_color=master.cget('fg_color'))
+        super().__init__(master=master, fg_color=master.cget('fg_color'), border_width=2)
         self.params = params_pointer
 
         self.help_window = None
@@ -153,7 +152,7 @@ class EntityAttributes(ctk.CTkFrame):
         self.params_select = ctk.CTkTabview(self, bg_color=self.cget('fg_color'))
         self.params_select.pack()
 
-        ctk.CTkLabel(self.params_select.add("Général"), text="Dommage, ça marche pas encore...").pack()
+        self.create_general_settings(self.params_select.add("Général"))
 
         self.rock_settings = SingleAttributeEdit(self.params_select.add("Pierre"))
         self.paper_settings = SingleAttributeEdit(self.params_select.add("Feuille"))
@@ -161,6 +160,14 @@ class EntityAttributes(ctk.CTkFrame):
         self.rock_settings.pack()
         self.paper_settings.pack()
         self.sissors_settings.pack()
+
+    def create_general_settings(self, master):
+        frame = ctk.CTkFrame(master, fg_color=master.cget('fg_color'))
+        frame.pack()
+        ctk.CTkLabel(frame, text="Écart type de modification").grid(row=0, column=0)
+        self.mod_scale_var = ctk.DoubleVar()
+        ctk.CTkSlider(frame, from_=0, to=1, variable=self.mod_scale_var).grid(row=0, column=1)
+        ctk.CTkLabel(frame, textvariable=self.mod_scale_var, width=40).grid(row=0, column=2)
 
     def on_help(self):
         if self.help_window is None or not self.help_window.winfo_exists():
@@ -170,19 +177,23 @@ La simulation est asymétrique : chaque type d'entité peut avoir des caracteris
 
 Pour chaque type d'entité :
 
-• vitesse :                   la distance (par dimension = zone carrée) qu'une entité peut parcourir a chaque étape
-• dégats :                    le nombre max dénergie qu'une entité peut enlever à sa proie
-• vol d'énergie :             la proportion d'énergie qu'une entité récupèrera apres avoir attaqué une autre (vol * dégats infligés)
-• energie de naissance :      l'énergie qu'une entité auras lors de sa naissance
-• energie pour reproduction : l'énergie nécessaire à une entité pour se reproduire
-• facteur de vieillissement : vitesse à laquelle une entité perd naturellement de l'énergie
-• vision :                    la distance (par dimension = zone carrée) à laquelle une entité peut voir
-• portée :                    la distance (par dimension = zone carrée) à laquelle une entité peut attaquer
+    • vitesse : la distance (par dimension = zone carrée) qu'une entité peut parcourir a chaque étape
+    • dégats : le nombre max dénergie qu'une entité peut enlever à sa proie
+    • vol d'énergie : la proportion d'énergie qu'une entité récupèrera apres avoir attaqué une autre (vol * dégats infligés)
+    • energie de naissance : l'énergie qu'une entité auras lors de sa naissance
+    • energie pour reproduction : l'énergie nécessaire à une entité pour se reproduire
+    • facteur de vieillissement : vitesse à laquelle une entité perd naturellement de l'énergie
+    • vision : la distance (par dimension = zone carrée) à laquelle une entité peut voir
+    • portée : la distance (par dimension = zone carrée) à laquelle une entité peut attaquer
 
 
 Paramètres généraux :
-• écart type de modification : écart type pour la loi normale utilisée pour la modification du réseau de neurone d'un enfant
+
+    • écart type de modification : écart type pour la loi normale utilisée pour la modification du réseau de neurone d'un enfant
         plus ce nombre est grand, plus l'enfant sera différent de son parent
+
+
+⚠ Pour appliquer les changements, il faut 'Réinitialiser' la simulation même si elle n'est pas en train de tourner ⚠
 """
             self.toplevel_window = HelpWondow(message)
         else:
@@ -200,13 +211,14 @@ Paramètres généraux :
         self.rock_settings.set_values(rock)
         self.paper_settings.set_values(paper)
         self.sissors_settings.set_values(sissors)
+        self.mod_scale_var.set(self.params['sim']['data']['mod_scale'])
 
     def get_data(self):
         rock = self.rock_settings.get_values()
         paper = self.paper_settings.get_values()
         sissors = self.sissors_settings.get_values()
         data = {k: [paper[k], rock[k], sissors[k]] for k in paper.keys() & rock.keys() & sissors.keys()}
-        data['mod_scale'] = 0.002 # TODO : implement this in general settings
+        data['mod_scale'] = self.mod_scale_var.get()
         return {
             "easter_egg": True,
             "sim": {
@@ -243,9 +255,9 @@ class App(ctk.CTk):
 
         self.sidebar_menu = ctk.CTkFrame(self)
         self.menu = MenuFrame(master=self.sidebar_menu)
-        self.menu.pack()
+        self.menu.pack(padx=10, pady=10, ipadx=10, ipady=10)
         self.settings = EntityAttributes(master=self.sidebar_menu, params_pointer=self.config)
-        self.settings.pack()
+        self.settings.pack(padx=10, pady=10, ipadx=10, ipady=10)
         self.settings.reset_params()
         self.sidebar_menu.grid(row=0, column=0, stick='nsew')
         self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])

@@ -166,8 +166,6 @@ class Simulation:
         self.log_2.append(0)
         self.log_t.append(0)
         self.tick += 1
-        # change the way to handle movements, for now, entities can destroy others by just 'overwriting' them
-        # collisions handled, maybe it's a solution
         new_map = np.empty(shape=self.grid_size, dtype=object)
         for ind, entity in np.ndenumerate(self.map):
             if entity is not None:
@@ -185,7 +183,6 @@ class Simulation:
                         x = (ind[0] + dx) % self.grid_size[0]
                         y = (ind[1] + dy) % self.grid_size[1]
                         if not (0 <= x < self.grid_size[0] and 0 <= y < self.grid_size[1]):  # should never be True
-                            print('WTF ?!?')
                             vision[t, 0] = -1
                             continue
                         elem = self.map[x, y]
@@ -215,9 +212,9 @@ class Simulation:
                     if new_map[new_pos] is None:
                         new_map[new_pos] = child
                         self.log_t[-1] += 1
-                        self.log_0[-1] += int(child.type == 0)
-                        self.log_1[-1] += int(child.type == 1)
-                        self.log_2[-1] += int(child.type == 2)
+                        self.log_0[-1] += int(child.type == Entity.Types.PAPER)
+                        self.log_1[-1] += int(child.type == Entity.Types.ROCK)
+                        self.log_2[-1] += int(child.type == Entity.Types.SCISSORS)
                     else:
                         possibles_pos = []
                         for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
@@ -232,18 +229,18 @@ class Simulation:
                             possibles_pos.sort(key=lambda a: a[2])
                             new_map[possibles_pos[0][0], possibles_pos[0][1]] = child
                             self.log_t[-1] += 1
-                            self.log_0[-1] += int(child.type == 0)
-                            self.log_1[-1] += int(child.type == 1)
-                            self.log_2[-1] += int(child.type == 2)
+                            self.log_0[-1] += int(child.type == Entity.Types.PAPER)
+                            self.log_1[-1] += int(child.type == Entity.Types.ROCK)
+                            self.log_2[-1] += int(child.type == Entity.Types.SCISSORS)
                         else:
                             entity.energy *= 2  # gives back energy
                 # apply movements
                 if new_map[new_pos] is None:
                     new_map[new_pos] = entity
                     self.log_t[-1] += 1
-                    self.log_0[-1] += int(entity.type == 0)
-                    self.log_1[-1] += int(entity.type == 1)
-                    self.log_2[-1] += int(entity.type == 2)
+                    self.log_0[-1] += int(entity.type == Entity.Types.PAPER)
+                    self.log_1[-1] += int(entity.type == Entity.Types.ROCK)
+                    self.log_2[-1] += int(entity.type == Entity.Types.SCISSORS)
                 else:
                     possibles_pos = []
                     for dx in range(-self.vision[entity.type], self.vision[entity.type] + 1):
@@ -258,9 +255,9 @@ class Simulation:
                         possibles_pos.sort(key=lambda a: a[2])
                         new_map[possibles_pos[0][0], possibles_pos[0][1]] = entity
                         self.log_t[-1] += 1
-                        self.log_0[-1] += int(entity.type == 0)
-                        self.log_1[-1] += int(entity.type == 1)
-                        self.log_2[-1] += int(entity.type == 2)
+                        self.log_0[-1] += int(entity.type == Entity.Types.PAPER)
+                        self.log_1[-1] += int(entity.type == Entity.Types.ROCK)
+                        self.log_2[-1] += int(entity.type == Entity.Types.SCISSORS)
                 # handle killing
                 if action[2] > 0.6 and len(food) > 0:
                     food.sort(key=lambda a: a[1])

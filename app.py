@@ -165,10 +165,16 @@ class EntityAttributes(ctk.CTkFrame):
     def create_general_settings(self, master):
         frame = ctk.CTkFrame(master, fg_color=master.cget('fg_color'))
         frame.pack()
+
         ctk.CTkLabel(frame, text="Écart type de modification").grid(row=0, column=0)
         self.mod_scale_var = ctk.DoubleVar()
         ctk.CTkSlider(frame, from_=0, to=1, variable=self.mod_scale_var).grid(row=0, column=1)
         ctk.CTkLabel(frame, textvariable=self.mod_scale_var, width=40).grid(row=0, column=2)
+
+        ctk.CTkLabel(frame, text="Population").grid(row=1, column=0)
+        self.pop_size_var = ctk.IntVar()
+        ctk.CTkSlider(frame, from_=0, to=100, variable=self.pop_size_var).grid(row=1, column=1)
+        ctk.CTkLabel(frame, textvariable=self.pop_size_var, width=40).grid(row=1, column=2)
 
     def on_help(self):
         if self.help_window is None or not self.help_window.winfo_exists():
@@ -192,6 +198,8 @@ Paramètres généraux :
 
     • écart type de modification : écart type pour la loi normale utilisée pour la modification du réseau de neurone d'un enfant
         plus ce nombre est grand, plus l'enfant sera différent de son parent
+
+    • population : le nombre d'individus lors de la création de la simulation
 
 
 ⚠ Pour appliquer les changements, il faut 'Réinitialiser' la simulation même si elle n'est pas en train de tourner ⚠

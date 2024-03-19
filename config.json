@@ -1,5 +1,5 @@
 {
-    "easter_egg": true,
+    "easter_egg": false,
     "sim": {
         "delta_time": 1,
         "grid_size": [30, 30],

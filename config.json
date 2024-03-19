@@ -3,7 +3,7 @@
     "sim": {
         "delta_time": 1,
         "grid_size": [30, 30],
-        "tile_size": 10,
+        "tile_size": 20,
         "pop_size": 20,
         "layers": [10, 10],
         "data": {

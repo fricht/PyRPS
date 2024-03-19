@@ -26,7 +26,7 @@ Les dépendances sont présentes dans le fichier `requirements.txt`, l'installat
 
 ## Usage
 
-Pour lancer l'application, il faut exécuter le fichier `app.py` :
+Pour lancer l'application, exécutez le fichier `app.py` :
 ```sh
 > python app.py
 ```
@@ -68,13 +68,13 @@ Le sous-menu `Paramètre` permet de modifier les différents paramètres de la s
 
 Sur Windows, Tkinter doit être installé lors de l'installation de Python. Il n'est pas possible d'utiliser `pip` pour installer Tkinter.
 
-Pour installer Tkinter, télécharger la dernière version l'installateur Python [ici](https://python.org/downloads), puis exécuter le. Choisissez l'option `Modify` puis cochez `tcl/tk and IDLE` :
+Pour installer Tkinter, téléchargez la dernière version l'installateur Python [ici](https://python.org/downloads), puis exécutez-le. Choisissez l'option `Modify` puis cochez `tcl/tk and IDLE` :
 
 ![Installateur Python](doc/assets/tkinter.png)
 
 Ensuite, cliquez sur `Next` puis `🛡️ Install`.
 
-Tkinter est maintenant être installé sur votre ordinateur. Vous pouvez dorénavant relancer l'application.
+Tkinter est maintenant installé sur votre ordinateur. Vous pouvez dorénavant relancer l'application.
 </details>
 
 <details>
@@ -85,5 +85,5 @@ Pour installer Tkinter sur Linux, exécutez simplement la commande suivante :
 > sudo apt-get install python3-tk
 ```
 
-Tkinter est maintenant être installé sur votre ordinateur. Vous pouvez dorénavant relancer l'application.
+Tkinter est maintenant installé sur votre ordinateur. Vous pouvez dorénavant relancer l'application.
 </details>

@@ -1,63 +1,89 @@
-# PyRPS
+# PyRPS - Trophées NSI
 
-Une compétition évolutive à base d'IA, de pierres, de feuilles, de ciseaux et d'autres mécanismes intéressants pour déterminer quel camp est le meilleur.
+## Description
 
-# Installation
+Une compétition évolutive à base d'intelligence artificielle, de pierres, de papier et de ciseaux qui simule le célèbre jeu à grande échelle pour déterminer quel camp est le meilleur.
 
-Les librairies nécessaires à l'exécution de la simulation sont `CustomTkinter`, `Matplotlib`, `NumPy` et `Pillow`. Elles sont listées dans le fichier `requirements.txt`, l'installation est donc très simple :
+## Prérequis
+
+Les dépendances nécessaires au fonctionnement de l'application sont :
+- [CustomTkinter](https://customtkinter.tomschimansky.com/)
+- [Matplotlib](https://matplotlib.org/)
+- [NumPy](https://numpy.org/)
+- [Pillow](https://pillow.readthedocs.io/en/stable/)
+- [Tkinter](https://docs.python.org/3/library/tkinter.html)
+
+> ⚠️ **Attention**
+>
+> Tkinter doit être installé lors de l'installation de Python. Voir [ici](#modulenotfounderror-no-module-named-tkinter) si Tkinter n'est pas installé sur votre ordinateur.
+
+## Installation
+
+Les dépendances sont présentes dans le fichier `requirements.txt`, l'installation est donc très simple :
 ```sh
 > pip install -r requirements.txt
 ```
-> ⚠️ **Attention**
->
-> TkInter doit être installé lors de l'installation de Python
 
+## Usage
 
-# Simulation
-
-## Configuration
-
-Le fichier de configuration de la simulation est `config.json` :
-- `easter_egg` : activer ou non l'easter egg
-- `sim` :
-    - `delta_time` : temps en millisecondes entre chaque étape de la simulation en temps réel (en plus du temps de calcul)
-    - `grid_size` : taille de la carte sur laquelle évoluent les populations
-    - `tile_size` : taille d'une case de la carte (et donc d'une entité)
-    - `pop_size` : nombre d'entités initialement présentes dans chacune des trois populations
-    - `layers` : couches de neuronnes cachées pour les réseaux de neuronnes des entités
-    - `data` :
-    
-        - `speed` : vitesse des entités
-        - `damage` : dégâts que peuvent infliger les entités
-        - `steal` : énergie que peuvent voler les entités aux entités des autres populations
-        - `energy` : énergie initial de l'entité et énergie nécessaire pour se reproduire
-        - `loss_factor` : facteur de perte d'énergie au cours du temps pour une entité
-        - `vision` : distance à laquelle les entités peuvent voir
-        - `range` : distance à laquelle les entités peuvent attaquer
-        - `mod_scale` : facteur de mutation des neuronnes lors de la reproduction d'une entité
-> ℹ️ **Note**
->
-> Les paramètres de `data` (sauf `mod_scale`) sont présents 3 fois pour personnaliser chaque population
-
-## Exécution
-
-Le fichier principal de la simulation est `app.py`. Pour la lancer il suffit donc d'exécuter ce fichier :
+Pour lancer l'application, il faut exécuter le fichier `app.py` :
 ```sh
 > python app.py
 ```
-> ℹ️ **Note**
->
-> La commande pour lancer python peut varier selon votre installation
 
 Cela ouvrira l'interface graphique suivante :
 
-![Interface de la simulation](assets/image.png)
+![Interface de la simulation](doc/assets/interface.png)
 
-À gauche se trouve un menu permettant de contrôler la simulation tandis que la zone où la simulation est représentée se situe sur la droite.
+Cette interface se structure en deux parties :
+- A gauche se situe le menu permettant de contrôler la simulation et d'en changer les paramètres
+- A droite se trouve la carte où la simulation est représentée
 
-## Contrôle de la simulation
-Les 4 boutons bleus permettent de contrôler la simulation :
-- Lancer la simulation : démarre la simulation en temps réel
-- Stopper la simulation : met en pause la simulation
-- Step : avance la simulation d'une étape
-- Réinitialiser : affiche un graphique montrant l'évolution des populations, puis remet à zéro la simulation
+Le sous-menu `Simulation` permet de contrôler l'état de la simulation à l'aide des 4 boutons :
+- `Lancer la simulation` : démarre la simulation en temps réel
+- `Stopper la simulation` : met en pause la simulation
+- `Step` : avance la simulation d'une étape
+- `Réinitialiser` : affiche un graphique montrant l'évolution des populations, puis remet à zéro la simulation
+
+Le sous-menu `Paramètre` permet de modifier les différents paramètres de la simulation :
+- `Aide` : affiche de l'aide à propos des différents paramètres
+- `Reset` : réinitialise les paramètres aux derniers sauvegardés en mémoire
+- `Sauver` : sauvegarde les paramètres en mémoire
+- `Ecart type de modification` : facteur de mutation du réseau de neuronnes lors de la reproduction d'une entité
+- `Vitesse` : vitesse de déplacement des entités (recommandé à 1 pour une meilleure expérience visuelle)
+- `Dégâts` : dégâts que peuvent infliger les entités à leurs proies
+- `Vol d'énergie` : énergie récupérée par les entités après une attaque
+- `Energie de naissance` : énergie possédé par une entité lors de sa création
+- `Energie pour reproduction` : énergie nécessaire à une entité pour se reproduire
+- `Facteur de vieillissement` : vitesse à laquelle les entités perdent de l'énergie
+- `Vision` : distance à laquelle peuvent voir les entités
+- `Portée` : distance à laquelle les entités peuvent attaquer
+
+## Résolution de problèmes
+
+### ModuleNotFoundError: No module named 'tkinter'
+
+<details>
+<summary>Windows</summary>
+
+Sur Windows, Tkinter doit être installé lors de l'installation de Python. Il n'est pas possible d'utiliser `pip` pour installer Tkinter.
+
+Pour installer Tkinter, télécharger la dernière version l'installateur Python [ici](https://python.org/downloads), puis exécuter le. Choisissez l'option `Modify` puis cochez `tcl/tk and IDLE` :
+
+![Installateur Python](doc/assets/tkinter.png)
+
+Ensuite, cliquez sur `Next` puis `🛡️ Install`.
+
+Tkinter est maintenant être installé sur votre ordinateur. Vous pouvez dorénavant relancer l'application.
+</details>
+
+<details>
+<summary>Linux</summary>
+
+Pour installer Tkinter sur Linux, exécutez simplement la commande suivante :
+```sh
+> sudo apt-get install python3-tk
+```
+
+Tkinter est maintenant être installé sur votre ordinateur. Vous pouvez dorénavant relancer l'application.
+</details>

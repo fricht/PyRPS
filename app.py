@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import json
 
 
-class HelpWondow(ctk.CTkToplevel):
+class HelpWindow(ctk.CTkToplevel):
     '''
     Wrapper pour afficher une fenaitre d'aide (ou autre)
     '''
@@ -16,7 +16,7 @@ class HelpWondow(ctk.CTkToplevel):
         self.geometry('800x600')
         self.textbox = ctk.CTkTextbox(self)
         self.textbox.pack(padx=20, pady=20, fill=ctk.BOTH, expand=True)
-        # TODO : use monospace font ?
+        # ? TODO : use monospace font ?
         self.textbox.insert('0.0', text=text)
         self.textbox.configure(state=ctk.DISABLED)
 
@@ -143,7 +143,7 @@ class EntityAttributes(ctk.CTkFrame):
 
         FrameTitle(master=self, text="Paramètres").pack()
 
-        ctk.CTkButton(self, text='aide', command=self.on_help).pack(pady=10)
+        ctk.CTkButton(self, text='Aide', command=self.on_help).pack(pady=10)
 
         self.actions_frame = ctk.CTkFrame(self)
         ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=10, pady=10)
@@ -184,9 +184,8 @@ Paramètres généraux :
 • écart type de modification : écart type pour la loi normale utilisée pour la modification du réseau de neurone d'un enfant
         plus ce nombre est grand, plus l'enfant sera différent de son parent
 """
-            self.toplevel_window = HelpWondow(message)
-        else:
-            self.toplevel_window.focus()  # if window exists focus it
+            self.toplevel_window = HelpWindow(message)
+        self.toplevel_window.focus()  # if window exists focus it
 
     def reset_params(self):
         rock = {}

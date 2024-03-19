@@ -5,6 +5,9 @@ from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import json
 
+class FrameTitle(ctk.CTkLabel):
+    def __init__(self, master, text):
+        super().__init__(master=master, text=text, font=('Arial', 16))
 
 class MenuFrame(ctk.CTkFrame):
     '''
@@ -13,14 +16,16 @@ class MenuFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
 
+        FrameTitle(master=self, text='Simulation').grid(column=0, row=0, columnspan=2)
+
         self.btn_run = ctk.CTkButton(master=self, text='Lancer la simulation', bg_color=self.cget('fg_color'))
-        self.btn_run.grid(padx=20, pady=(20, 10))
+        self.btn_run.grid(column=0, row=1, padx=5, pady=5)
         self.btn_stop = ctk.CTkButton(master=self, text='Stopper la simulation', bg_color=self.cget('fg_color'))
-        self.btn_stop.grid(padx=20, pady=10)
+        self.btn_stop.grid(column=1, row=1, padx=5, pady=5)
         self.btn_step = ctk.CTkButton(master=self, text='Step', bg_color=self.cget('fg_color'))
-        self.btn_step.grid(padx=20, pady=10)
+        self.btn_step.grid(column=0, row=2, padx=5, pady=5)
         self.btn_reset = ctk.CTkButton(master=self, text='Réinitialiser', bg_color=self.cget('fg_color'))
-        self.btn_reset.grid(padx=20, pady=(10, 20))
+        self.btn_reset.grid(column=1, row=2, padx=5, pady=5)
 
     def on_run(self, fn):
         self.btn_run.configure(command=fn)
@@ -85,7 +90,7 @@ class SingleAttributeEdit(ctk.CTkFrame):
         ctk.CTkSlider(self, from_=1, to=20, variable=self.vision_var, number_of_steps=19).grid(row=6, column=1)
         ctk.CTkLabel(self, textvariable=self.vision_var).grid(row=6, column=2)
 
-        ctk.CTkLabel(self, text="Protée").grid(row=7, column=0)
+        ctk.CTkLabel(self, text="Portée").grid(row=7, column=0)
         self.range_var = ctk.IntVar()
         ctk.CTkSlider(self, from_=1, to=20, variable=self.range_var, number_of_steps=19).grid(row=7, column=1)
         ctk.CTkLabel(self, textvariable=self.range_var).grid(row=7, column=2)
@@ -118,8 +123,7 @@ class EntityAttributes(ctk.CTkFrame):
 
         self.params = params_pointer
 
-        self.section_label = ctk.CTkLabel(self, text="Paramètres", bg_color=self.cget('fg_color'))
-        self.section_label.pack()
+        FrameTitle(master=self, text="Paramètres").pack()
 
         self.actions_frame = ctk.CTkFrame(self)
         ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=10, pady=10)

@@ -248,7 +248,6 @@ class App(ctk.CTk):
         self.show_plot()
         # using the user config
         cfg = self.settings.get_data()
-        print(cfg['sim']['data'])
         self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
 
     def show_plot(self):

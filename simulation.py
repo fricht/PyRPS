@@ -114,7 +114,6 @@ class Simulation:
         self.log_2 = []
         self.log_t = []
         # Specie characteristics
-        print(data) # ???????????????????? why aren't they like i gave them ?
         self.mod_scale = data['mod_scale']
         self.speed = data['speed']
         self.damage = data['damage']
@@ -141,9 +140,9 @@ class Simulation:
 
     def generate(self, pop_size, net_size):
         for _ in range(pop_size):
-            rock = Entity(Entity.Types.ROCK, Network.new([(2 * self.vision[0] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[0][0], self.loss_factor[0])
-            paper = Entity(Entity.Types.PAPER, Network.new([(2 * self.vision[1] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[1][0], self.loss_factor[1])
-            scissors = Entity(Entity.Types.SCISSORS, Network.new([(2 * self.vision[2] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[2][0], self.loss_factor[2])
+            rock = Entity(Entity.Types.ROCK, Network.new([(2 * self.vision[Entity.Types.ROCK] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[Entity.Types.ROCK][0], self.loss_factor[0])
+            paper = Entity(Entity.Types.PAPER, Network.new([(2 * self.vision[Entity.Types.PAPER] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[Entity.Types.PAPER][0], self.loss_factor[1])
+            scissors = Entity(Entity.Types.SCISSORS, Network.new([(2 * self.vision[Entity.Types.SCISSORS] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[Entity.Types.SCISSORS][0], self.loss_factor[2])
             self.place_entity_random(rock)
             self.place_entity_random(paper)
             self.place_entity_random(scissors)

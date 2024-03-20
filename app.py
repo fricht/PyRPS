@@ -6,19 +6,58 @@ import matplotlib.pyplot as plt
 import json
 
 
-class HelpWindow(ctk.CTkToplevel):
+class HelpWindowManager:
     '''
-    Wrapper pour afficher une fenaitre d'aide (ou autre)
+    Wrapper pour afficher une fenêtre d'aide
     '''
-    def __init__(self, text, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.title("Aide")
-        self.geometry('800x600')
-        self.textbox = ctk.CTkTextbox(self)
-        self.textbox.pack(padx=20, pady=20, fill=ctk.BOTH, expand=True)
+
+    message = """
+La simulation est asymétrique : chaque population peut avoir des caractéristiques différentes des autres.
+
+
+Pour chaque population :
+
+    • Vitesse : la distance (par dimension = zone carrée) qu'une entité peut parcourir à chaque étape
+    • Dégâts : la quantité maximale d'énergie qu'une entité peut enlever à sa proie
+    • Vol d'énergie : la proportion d'énergie qu'une entité récupère après en avoir attaqué une autre (vol * dégats infligés)
+    • Energie de naissance : l'énergie d'une entité lors de sa naissance
+    • Energie pour reproduction : l'énergie nécessaire à une entité pour se reproduire
+    • Facteur de vieillissement : vitesse à laquelle une entité perd naturellement de l'énergie
+    • Vision : la distance (par dimension = zone carrée) à laquelle une entité peut voir
+    • Portée : la distance (par dimension = zone carrée) à laquelle une entité peut attaquer
+
+
+Paramètres généraux :
+
+    • Ecart type de modification : écart type de la loi normale utilisée pour la modification du réseau de neurone d'un enfant.
+        Plus ce nombre est grand, plus l'enfant sera différent de son parent.
+    • Population : le nombre d'individus lors de la création de la simulation
+
+
+⚠ Pour appliquer les changements, il faut 'Réinitialiser' la simulation, même si elle n'est pas en train de tourner ⚠
+"""
+
+    def __init__(self):
+        self.showed = False
+        self.window = None
+
+
+    def show(self):
+        self.showed = True
+        self.window = ctk.CTkToplevel()
+        self.window.title('PyRPS - Aide : Paramètres de simulation')
+        self.window.geometry('800x600')
+        self.window.textbox = ctk.CTkTextbox(master=self.window)
+        self.window.textbox.pack(padx=20, pady=20, fill=ctk.BOTH, expand=True)
         # ? TODO : use monospace font ?
-        self.textbox.insert('0.0', text=text)
-        self.textbox.configure(state=ctk.DISABLED)
+        self.window.textbox.insert('0.0', text=HelpWindowManager.message)
+        self.window.textbox.configure(state=ctk.DISABLED)
+        self.window.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.window.grab_set()
+    
+    def on_close(self):
+        self.showed = False
+        self.window.destroy()
 
 
 class FrameTitle(ctk.CTkLabel):
@@ -155,7 +194,7 @@ class EntityAttributes(ctk.CTkFrame):
         super().__init__(master=master, fg_color=master.cget('fg_color'), border_width=2)
         self.params = params_pointer
 
-        self.help_window = None
+        self.help_window = HelpWindowManager()
 
         FrameTitle(master=self, text="Paramètres").grid(row=0, column=0, pady=10)
 
@@ -193,36 +232,8 @@ class EntityAttributes(ctk.CTkFrame):
         ctk.CTkLabel(frame, textvariable=self.pop_size_var, width=40).grid(row=1, column=2)
 
     def on_help(self):
-        if self.help_window is None or not self.help_window.winfo_exists():
-            message = """
-La simulation est asymétrique : chaque type d'entité peut avoir des caracteristiques différentes des autres
-
-
-Pour chaque type d'entité :
-
-    • vitesse : la distance (par dimension = zone carrée) qu'une entité peut parcourir a chaque étape
-    • dégats : le nombre max dénergie qu'une entité peut enlever à sa proie
-    • vol d'énergie : la proportion d'énergie qu'une entité récupèrera apres avoir attaqué une autre (vol * dégats infligés)
-    • energie de naissance : l'énergie qu'une entité auras lors de sa naissance
-    • energie pour reproduction : l'énergie nécessaire à une entité pour se reproduire
-    • facteur de vieillissement : vitesse à laquelle une entité perd naturellement de l'énergie
-    • vision : la distance (par dimension = zone carrée) à laquelle une entité peut voir
-    • portée : la distance (par dimension = zone carrée) à laquelle une entité peut attaquer
-
-
-Paramètres généraux :
-
-    • écart type de modification : écart type pour la loi normale utilisée pour la modification du réseau de neurone d'un enfant
-        plus ce nombre est grand, plus l'enfant sera différent de son parent
-
-    • population : le nombre d'individus lors de la création de la simulation
-
-
-⚠ Pour appliquer les changements, il faut 'Réinitialiser' la simulation même si elle n'est pas en train de tourner ⚠
-"""
-            self.toplevel_window = HelpWindow(message)
-        self.toplevel_window.focus()  # if window exists focus it
-
+        self.help_window.show()
+    
     def reset_params(self):
         rock = {}
         paper = {}

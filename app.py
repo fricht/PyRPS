@@ -22,6 +22,9 @@ class HelpWindow(ctk.CTkToplevel):
 
 
 class FrameTitle(ctk.CTkLabel):
+    '''
+    Classe pour les titres de section avec des paramètres prédéfinis
+    '''
     def __init__(self, master, text):
         super().__init__(master=master, text=text, font=('Arial', 16))
 
@@ -69,6 +72,9 @@ class CanvasFrame(ctk.CTkFrame):
 
 
 class SingleAttributeEdit(ctk.CTkFrame):
+    '''
+    Classe pour la modification des attributs d'une entité
+    '''
     def __init__(self, master):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
 
@@ -135,6 +141,9 @@ class SingleAttributeEdit(ctk.CTkFrame):
 
 
 class EntityAttributes(ctk.CTkFrame):
+    '''
+    Classe pour les paramètres des populations et de la simulation
+    '''
     def __init__(self, master, params_pointer):
         super().__init__(master=master, fg_color=master.cget('fg_color'), border_width=2)
         self.params = params_pointer

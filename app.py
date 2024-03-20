@@ -157,17 +157,17 @@ class EntityAttributes(ctk.CTkFrame):
 
         self.help_window = None
 
-        FrameTitle(master=self, text="Paramètres").pack()
+        FrameTitle(master=self, text="Paramètres").grid(row=0, column=0, pady=10)
 
-        ctk.CTkButton(self, text='Aide', command=self.on_help).pack(pady=10)
+        ctk.CTkButton(self, text='Aide', command=self.on_help).grid(row=1, column=0, pady=6)
 
         self.actions_frame = ctk.CTkFrame(self)
-        ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=10, pady=10)
-        ctk.CTkButton(self.actions_frame, text="Sauver", command=self.save_params).grid(row=0, column=1, padx=10, pady=10)
-        self.actions_frame.pack()
+        ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=6, pady=6)
+        ctk.CTkButton(self.actions_frame, text="Sauver", command=self.save_params).grid(row=0, column=1, padx=6, pady=6)
+        self.actions_frame.grid(row=2, column=0, pady=6)
 
-        self.params_select = ctk.CTkTabview(self, bg_color=self.cget('fg_color'))
-        self.params_select.pack()
+        self.params_select = ctk.CTkTabview(self, bg_color=self.cget('fg_color'), width=420, height=250) # TODO: trouver la bonne valeur pour height
+        self.params_select.grid(row=3, column=0, padx=12, pady=(6, 12))
 
         self.create_general_settings(self.params_select.add("Général"))
 
@@ -182,7 +182,7 @@ class EntityAttributes(ctk.CTkFrame):
         frame = ctk.CTkFrame(master, fg_color=master.cget('fg_color'))
         frame.pack()
 
-        ctk.CTkLabel(frame, text="Écart type de modification").grid(row=0, column=0)
+        ctk.CTkLabel(frame, text="Écart type de modification").grid(row=0, column=0, padx=(0, 6))
         self.mod_scale_var = ctk.DoubleVar()
         ctk.CTkSlider(frame, from_=0, to=1, variable=self.mod_scale_var).grid(row=0, column=1)
         ctk.CTkLabel(frame, textvariable=self.mod_scale_var, width=40).grid(row=0, column=2)
@@ -279,9 +279,9 @@ class App(ctk.CTk):
 
         self.sidebar_menu = ctk.CTkFrame(self)
         self.menu = MenuFrame(master=self.sidebar_menu)
-        self.menu.grid(row=0, column=0, stick='nsew', padx=15, pady=15)
+        self.menu.grid(row=0, column=0, stick='nsew', padx=12, pady=(12, 6))
         self.settings = EntityAttributes(master=self.sidebar_menu, params_pointer=self.config)
-        self.settings.grid(row=1, column=0, stick='nsew', padx=15)
+        self.settings.grid(row=1, column=0, stick='nsew', padx=12, pady=(6, 12))
         self.settings.reset_params()
         self.sidebar_menu.grid(row=0, column=0, stick='nsew')
         self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])

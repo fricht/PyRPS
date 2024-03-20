@@ -40,7 +40,7 @@ class Network:
         return Network.from_params(params)
 
 
-# why the fuck is numpy slower than python iterations ???
+# why is numpy slower than python iterations ???
 # class _Network:
 # 	def __init__(self, params, gen=False):
 # 		if gen:

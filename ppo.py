@@ -62,7 +62,7 @@ class Layer:
         return self.activation.activate(s), s
 
     def apply_gradients(self): # just apply backpropagation
-        self.params += self.learning_rate * self.gradients
+        self.params += self.learning_rate * -self.gradients
         self.gradients = np.zeros_like(self.gradients)
 
     def previous_layer_deriv(self, raw_output_logs, layer_deriv): # compute deriv for the previous layer (propagate)
@@ -114,7 +114,7 @@ class Network:
             logs.append([input_data, None])
             input_data, raw_log = layer.feed_forward(input_data)
             logs[-1][1] = raw_log
-        deriv = self.cost_func.deriv(input_data[0], target_data)
+        deriv = self.cost_func.deriv(input_data, target_data)
         for layer, log in zip(reversed(self.layers), reversed(logs)):
             deriv = layer.full_backprop(log[0], log[1], deriv)
 
@@ -144,7 +144,7 @@ bref, à completer ...
 
 if __name__ == "__main__":
     # tests things
-    net = Network.new([Layer.new(2, 100, Activation.Sigmoid, 0.1, 1), Layer.new(100, 1, Activation.Sigmoid, 1, 1)], Cost.MeanSquaredError)
+    net = Network.new([Layer.new(2, 2, Activation.Sigmoid, 0.1, 1), Layer.new(2, 1, Activation.Sigmoid, 0.1, 1)], Cost.MeanSquaredError)
     # XOR data
     data = [[np.array([0, 0]), np.array([0])], [np.array([1, 0]), np.array([1])], [np.array([0, 1]), np.array([1])], [np.array([1, 1]), np.array([0])]]
     #test
@@ -153,7 +153,7 @@ if __name__ == "__main__":
         print("for %s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
     #learn
     print("### LEARNING ###")
-    for _ in range(100):
+    for _ in range(10000):
         for sample in data:
             net.learn(sample[0], sample[1])
     net.apply_learning()

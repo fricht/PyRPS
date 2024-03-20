@@ -169,6 +169,6 @@ if __name__ == "__main__":
         print("erreur, mauvais arguments\n`%s -h` ou `%s --help` pour afficher l'aide" % (sys.argv[0], sys.argv[0]))
         sys.exit()
 
-    if "-h" in sys.argv or "--helf" in sys.argv:
+    if "-h" in sys.argv or "--help" in sys.argv:
         print(help_msg)
         sys.exit()

@@ -36,16 +36,20 @@ class MenuFrame(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master=master, fg_color=master.cget('fg_color'), border_width=2)
 
-        FrameTitle(master=self, text='Simulation').grid(column=0, row=0, columnspan=2)
+        self.grid_anchor('center')
+
+        FrameTitle(master=self, text='Simulation').grid(column=0, row=0, columnspan=2, pady=10)
 
         self.btn_run = ctk.CTkButton(master=self, text='Lancer la simulation', bg_color=self.cget('fg_color'))
-        self.btn_run.grid(column=0, row=1, padx=5, pady=5)
+        self.btn_run.grid(column=0, row=1, padx=6, pady=6)
         self.btn_stop = ctk.CTkButton(master=self, text='Stopper la simulation', bg_color=self.cget('fg_color'))
-        self.btn_stop.grid(column=1, row=1, padx=5, pady=5)
-        self.btn_step = ctk.CTkButton(master=self, text='Step', bg_color=self.cget('fg_color'))
-        self.btn_step.grid(column=0, row=2, padx=5, pady=5)
+        self.btn_stop.grid(column=1, row=1, padx=6, pady=6)
+        self.btn_step = ctk.CTkButton(master=self, text='Avancer d\'une étape', bg_color=self.cget('fg_color'))
+        self.btn_step.grid(column=0, row=2, padx=6, pady=6)
         self.btn_reset = ctk.CTkButton(master=self, text='Réinitialiser', bg_color=self.cget('fg_color'))
-        self.btn_reset.grid(column=1, row=2, padx=5, pady=5)
+        self.btn_reset.grid(column=1, row=2, padx=6, pady=6)
+        self.btn_show_plot = ctk.CTkButton(master=self, text='Afficher le graphe', bg_color=self.cget('fg_color'))
+        self.btn_show_plot.grid(column=0, row=3, columnspan=2, padx=6, pady=(6, 20), stick='ew')
 
     def on_run(self, fn):
         self.btn_run.configure(command=fn)
@@ -58,6 +62,9 @@ class MenuFrame(ctk.CTkFrame):
 
     def on_step(self, fn):
         self.btn_step.configure(command=fn)
+    
+    def on_show_plot(self, fn):
+        self.btn_show_plot.configure(command=fn)
 
 
 class CanvasFrame(ctk.CTkFrame):
@@ -150,17 +157,17 @@ class EntityAttributes(ctk.CTkFrame):
 
         self.help_window = None
 
-        FrameTitle(master=self, text="Paramètres").pack()
+        FrameTitle(master=self, text="Paramètres").grid(row=0, column=0, pady=10)
 
-        ctk.CTkButton(self, text='Aide', command=self.on_help).pack(pady=10)
+        ctk.CTkButton(self, text='Aide', command=self.on_help).grid(row=1, column=0, pady=6)
 
         self.actions_frame = ctk.CTkFrame(self)
-        ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=10, pady=10)
-        ctk.CTkButton(self.actions_frame, text="Sauver", command=self.save_params).grid(row=0, column=1, padx=10, pady=10)
-        self.actions_frame.pack()
+        ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=6, pady=6)
+        ctk.CTkButton(self.actions_frame, text="Sauver", command=self.save_params).grid(row=0, column=1, padx=6, pady=6)
+        self.actions_frame.grid(row=2, column=0, pady=6)
 
-        self.params_select = ctk.CTkTabview(self, bg_color=self.cget('fg_color'))
-        self.params_select.pack()
+        self.params_select = ctk.CTkTabview(self, bg_color=self.cget('fg_color'), width=420, height=250) # TODO: trouver la bonne valeur pour height
+        self.params_select.grid(row=3, column=0, padx=12, pady=(6, 12))
 
         self.create_general_settings(self.params_select.add("Général"))
 
@@ -175,7 +182,7 @@ class EntityAttributes(ctk.CTkFrame):
         frame = ctk.CTkFrame(master, fg_color=master.cget('fg_color'))
         frame.pack()
 
-        ctk.CTkLabel(frame, text="Écart type de modification").grid(row=0, column=0)
+        ctk.CTkLabel(frame, text="Écart type de modification").grid(row=0, column=0, padx=(0, 6))
         self.mod_scale_var = ctk.DoubleVar()
         ctk.CTkSlider(frame, from_=0, to=1, variable=self.mod_scale_var).grid(row=0, column=1)
         ctk.CTkLabel(frame, textvariable=self.mod_scale_var, width=40).grid(row=0, column=2)
@@ -237,7 +244,7 @@ Paramètres généraux :
         data = {k: [paper[k], rock[k], sissors[k]] for k in paper.keys() & rock.keys() & sissors.keys()}
         data['mod_scale'] = self.mod_scale_var.get()
         return {
-            "easter_egg": True,
+            "easter_egg": True, # TODO: easter egg from config.json
             "sim": {
                 "delta_time": 1,
                 "grid_size": [30, 30],
@@ -272,9 +279,9 @@ class App(ctk.CTk):
 
         self.sidebar_menu = ctk.CTkFrame(self)
         self.menu = MenuFrame(master=self.sidebar_menu)
-        self.menu.pack(padx=10, pady=10, ipadx=10, ipady=10)
+        self.menu.grid(row=0, column=0, stick='nsew', padx=12, pady=(12, 6))
         self.settings = EntityAttributes(master=self.sidebar_menu, params_pointer=self.config)
-        self.settings.pack(padx=10, pady=10, ipadx=10, ipady=10)
+        self.settings.grid(row=1, column=0, stick='nsew', padx=12, pady=(6, 12))
         self.settings.reset_params()
         self.sidebar_menu.grid(row=0, column=0, stick='nsew')
         self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])
@@ -289,6 +296,7 @@ class App(ctk.CTk):
 
         self.sim_running = False
         self.request_sim_stop = False
+        self.has_reset = False
         self.sim_grid_size = config['sim']['grid_size']
         self.tile_size = config['sim']['tile_size']
         self.sim_pop_size = config['sim']['pop_size']
@@ -300,13 +308,11 @@ class App(ctk.CTk):
         self.menu.on_stop(self.stop_sim)
         self.menu.on_reset(self.reset_sim)
         self.menu.on_step(self.step_sim)
+        self.menu.on_show_plot(self.show_plot)
 
     def load_image(self, path, size):
         img = Image.open(path).resize((size, size))
         return ImageTk.PhotoImage(img)
-
-    def on_reset(self, fn):
-        self.menu.on_reset(fn)
 
     def update_canvas(self):
         self.clear_canvas()
@@ -323,20 +329,37 @@ class App(ctk.CTk):
 
     def reset_sim(self):
         self.stop_sim()
+        self.backup_logs()
+        self.has_reset = True
         self.clear_canvas()
-        self.show_plot()
         # using the user config
         cfg = self.settings.get_data()
         self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
+    
+    def backup_logs(self):
+        self.sim_log_t = self.sim.log_t.copy()
+        self.sim_log_0 = self.sim.log_0.copy()
+        self.sim_log_1 = self.sim.log_1.copy()
+        self.sim_log_2 = self.sim.log_2.copy()
 
     def show_plot(self):
-        iters = list(range(len(self.sim.log_t)))
+        log_t = self.sim.log_t
+        log_0 = self.sim.log_0
+        log_1 = self.sim.log_1
+        log_2 = self.sim.log_2
+        if self.has_reset:
+            log_t = self.sim_log_t
+            log_0 = self.sim_log_0
+            log_1 = self.sim_log_1
+            log_2 = self.sim_log_2
+
+        iters = list(range(len(log_t)))
         plt.clf()
         plt.title('Evolution des populations au cours du temps')
-        plt.plot(iters, self.sim.log_t, color="grey")
-        plt.plot(iters, self.sim.log_0, color="red")
-        plt.plot(iters, self.sim.log_1, color="green")
-        plt.plot(iters, self.sim.log_2, color="blue")
+        plt.plot(iters, log_t, color="grey")
+        plt.plot(iters, log_0, color="red")
+        plt.plot(iters, log_1, color="green")
+        plt.plot(iters, log_2, color="blue")
         plt.legend(["Total", "Feuille", "Pierre", "Ciseaux"])
         plt.grid(True)
         plt.xlabel("Temps")
@@ -349,6 +372,7 @@ class App(ctk.CTk):
     def launch_sim(self):
         if self.sim_running:
             return
+        self.has_reset = False
         self.run_sim()
 
     def run_sim(self):
@@ -367,6 +391,7 @@ class App(ctk.CTk):
     def step_sim(self):
         if self.sim_running:
             return
+        self.has_reset = False
         self.sim.step()
         self.update_canvas()
 

@@ -75,7 +75,6 @@ class Network:
     def new(layers):
         net = Network()
         net.layers = layers
-        net.activ_logs = []
         return net
 
     def feed_forward(self, input_data):
@@ -90,20 +89,15 @@ class Network:
         input_data = np.array([input_data])
         logs = []
         for layer in self.layers:
-            logs.append([input_data, None])
             input_data, raw_log = layer.feed_forward(input_data)
-            logs[-1][1] = raw_log
+            logs.append(raw_log)
         deriv = np.ones_like(input_data)
         for layer, log in zip(reversed(self.layers), reversed(logs)):
-            deriv = layer.previous_layer_deriv(log[1], deriv)
+            deriv = layer.previous_layer_deriv(log, deriv)
         return deriv[0]
 
-    def compute_backpropagation(self):
-        for data in self.activ_logs:
-            deriv = data[-1]
-            for layer, activ in zip(reversed(self.layers), reversed(data)[1::]):
-                deriv = layer.full_backprop(activ, deriv)
-        self.data = []
+    def learn(self):
+        pass
 
 
 
@@ -127,7 +121,7 @@ bref, à completer ...
 
 if __name__ == "__main__":
     # tests things
-    net = Network.new([Layer.new(1, 10, Activation.Sigmoid, 0.1, 1), Layer.new(10, 2, Activation.LReLU, 0.1, 1)])
+    net = Network.new([Layer.new(1, 10, Activation.Sigmoid, 0.1, 1), Layer.new(10, 1, Activation.LReLU, 0.1, 1)])
     d = np.array([1])
     print(net.feed_forward(d))
     for _ in range(600):

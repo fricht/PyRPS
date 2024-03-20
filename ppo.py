@@ -55,18 +55,19 @@ class Layer:
         self.params += self.learning_rate * self.gradients
         self.gradients = np.zeros_like(self.gradients)
 
-    def previous_layer_deriv(self, input_logs, raw_output_logs, layer_deriv): # compute deriv for the previous layer (propagate)
+    def previous_layer_deriv(self, raw_output_logs, layer_deriv): # compute deriv for the previous layer (propagate)
         drond_activation = self.activation.deriv(raw_output_logs)
-        full_back = drond_activation * layer_deriv
-        return np.matmul(drond_activation, self.params[:self.params.shape[0]-1, :self.params.shape[1]].transpose())
+        full_local_back = drond_activation * layer_deriv
+        return np.matmul(full_local_back, self.params[:self.params.shape[0]-1, :self.params.shape[1]].transpose())
 
-    def full_backprop(self, input_logs, layer_deriv): # apply backpropagation and compute for the previous layer (propagate)
+    def full_backprop(self, input_logs, raw_output_logs, layer_deriv): # apply backpropagation and compute for the previous layer (propagate)
         # here i'm not using the previous method to avoid computing the same thing twice
-        drond_activation = self.activation.deriv(input_logs.transpose())
-        weights_deriv = np.matmul(input_logs.transpose(), drond_activation)
-        full_deriv = np.r_[weights_deriv, drond_activation]
-        self.gradients = np.add(self.gradients, full_deriv)
-        return np.matmul(drond_activation, self.params[:self.params.shape[0]-1, :self.params.shape[1]].transpose())
+        drond_activation = self.activation.deriv(raw_output_logs)
+        full_local_back = drond_activation * layer_deriv # = bias gradient
+        weights_deriv = np.matmul(input_logs.transpose(), full_local_back)
+        full_params_deriv = np.r_[weights_deriv, full_local_back]
+        self.gradients = np.add(self.gradients, full_params_deriv)
+        return np.matmul(full_local_back, self.params[:self.params.shape[0]-1, :self.params.shape[1]].transpose())
 
 
 
@@ -89,11 +90,12 @@ class Network:
         input_data = np.array([input_data])
         logs = []
         for layer in self.layers:
-            logs.append(input_data)
-            input_data, _ = layer.feed_forward(input_data)
+            logs.append([input_data, None])
+            input_data, raw_log = layer.feed_forward(input_data)
+            logs[-1][1] = raw_log
         deriv = np.ones_like(input_data)
-        for layer, activ in zip(reversed(self.layers), reversed(logs)):
-            deriv = layer.previous_layer_deriv(activ, deriv)
+        for layer, log in zip(reversed(self.layers), reversed(logs)):
+            deriv = layer.previous_layer_deriv(log[1], deriv)
         return deriv[0]
 
     def compute_backpropagation(self):
@@ -128,14 +130,21 @@ if __name__ == "__main__":
     net = Network.new([Layer.new(1, 10, Activation.Sigmoid, 0.1, 1), Layer.new(10, 2, Activation.LReLU, 0.1, 1)])
     d = np.array([1])
     print(net.feed_forward(d))
-    for _ in range(6):
-        print('---')
+    for _ in range(600):
+        #print('---')
         deriv = net.input_deriv_only(d)
-        print(deriv)
+        #print(deriv)
         d = np.add(d, deriv * 10)
-        print(d)
-        print(net.feed_forward(d))
-        print('###')
+        #print(d)
+        #print(net.feed_forward(d))
+        #print('###')
+    print('---')
+    deriv = net.input_deriv_only(d)
+    print(deriv)
+    d = np.add(d, deriv * 10)
+    print(d)
+    print(net.feed_forward(d))
+    print('###')
     sys.exit()
     # then exit
 

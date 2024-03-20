@@ -37,10 +37,20 @@ class Activation:
 
 
 
+class Cost:
+    class MeanSquaredError:
+        def compute(output, target):
+            return np.sum(np.square(output-target)) / output.shape[0]
+
+        def deriv(output, target):
+            return (2 * output - 2 * target) / 2
+
+
+
 class Layer:
     def new(input_size, n_count, activation, learning_rate, std_dev):
         layer = Layer()
-        layer.gradients = np.zeros(shape=(n_count, input_size + 1))
+        layer.gradients = np.zeros(shape=(input_size + 1, n_count))
         layer.params = np.random.normal(scale=std_dev, size=(input_size + 1, n_count))
         layer.activation = activation
         layer.learning_rate = learning_rate
@@ -72,9 +82,10 @@ class Layer:
 
 
 class Network:
-    def new(layers):
+    def new(layers, cost_func):
         net = Network()
         net.layers = layers
+        net.cost_func = cost_func
         return net
 
     def feed_forward(self, input_data):
@@ -96,8 +107,20 @@ class Network:
             deriv = layer.previous_layer_deriv(log, deriv)
         return deriv[0]
 
-    def learn(self):
-        pass
+    def learn(self, input_data, target_data):
+        input_data = np.array([input_data])
+        logs = []
+        for layer in self.layers:
+            logs.append([input_data, None])
+            input_data, raw_log = layer.feed_forward(input_data)
+            logs[-1][1] = raw_log
+        deriv = self.cost_func.deriv(input_data[0], target_data)
+        for layer, log in zip(reversed(self.layers), reversed(logs)):
+            deriv = layer.full_backprop(log[0], log[1], deriv)
+
+    def apply_learning(self):
+        for layer in self.layers:
+            layer.apply_gradients()
 
 
 
@@ -121,24 +144,23 @@ bref, à completer ...
 
 if __name__ == "__main__":
     # tests things
-    net = Network.new([Layer.new(1, 10, Activation.Sigmoid, 0.1, 1), Layer.new(10, 1, Activation.LReLU, 0.1, 1)])
-    d = np.array([1])
-    print(net.feed_forward(d))
-    for _ in range(600):
-        #print('---')
-        deriv = net.input_deriv_only(d)
-        #print(deriv)
-        d = np.add(d, deriv * 10)
-        #print(d)
-        #print(net.feed_forward(d))
-        #print('###')
-    print('---')
-    deriv = net.input_deriv_only(d)
-    print(deriv)
-    d = np.add(d, deriv * 10)
-    print(d)
-    print(net.feed_forward(d))
-    print('###')
+    net = Network.new([Layer.new(2, 100, Activation.Sigmoid, 0.1, 1), Layer.new(100, 1, Activation.Sigmoid, 1, 1)], Cost.MeanSquaredError)
+    # XOR data
+    data = [[np.array([0, 0]), np.array([0])], [np.array([1, 0]), np.array([1])], [np.array([0, 1]), np.array([1])], [np.array([1, 1]), np.array([0])]]
+    #test
+    print('### TESTING ###')
+    for sample in data:
+        print("for %s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
+    #learn
+    print("### LEARNING ###")
+    for _ in range(100):
+        for sample in data:
+            net.learn(sample[0], sample[1])
+    net.apply_learning()
+    #test
+    print('### TESTING ###')
+    for sample in data:
+        print("for %s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
     sys.exit()
     # then exit
 

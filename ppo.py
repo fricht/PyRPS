@@ -2,6 +2,8 @@ import numpy as np
 import sys
 import os
 import simulation as sim
+import matplotlib.pyplot as plt
+import pylab as pltl
 
 
 class Activation:
@@ -40,7 +42,7 @@ class Activation:
 class Cost:
     class MeanSquaredError:
         def compute(output, target):
-            return np.sum(np.square(output-target)) / output.shape[0]
+            return np.sum(np.square(output - target)) / output.shape[0]
 
         def deriv(output, target):
             return (2 * output - 2 * target) / output.shape[0]
@@ -128,6 +130,7 @@ class Network:
         deriv = self.cost_func.deriv(input_data, target_data)
         for layer, log in zip(reversed(self.layers), reversed(logs)):
             deriv = layer.full_backprop(log[0], log[1], deriv)
+        return self.cost_func.compute(input_data, target_data)
 
     def apply_learning(self):
         for layer in self.layers:
@@ -155,25 +158,35 @@ bref, à completer ...
 
 if __name__ == "__main__":
     # tests things
-    net = Network.new([Layer.new(2, 2, Activation.Sigmoid, 1, 2), Layer.new(2, 1, Activation.Sigmoid, 1, 2)], Cost.MeanSquaredError)
+    net = Network.new([Layer.new(2, 2, Activation.Sigmoid, 10, 2), Layer.new(2, 1, Activation.Sigmoid, 10, 2)], Cost.MeanSquaredError)
     # XOR data
     data = [[np.array([0, 0]), np.array([0])], [np.array([1, 0]), np.array([1])], [np.array([0, 1]), np.array([1])], [np.array([1, 1]), np.array([0])]]
     #test
     print('### TESTING ###')
     for sample in data:
-        print("for %s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
+        print("%s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
     #learn
+    cost_logs = []
+    plt.ion()
     print("### LEARNING ###")
-    for _ in range(1000000):
+    for i in range(10000):
+        c = 0
         for sample in data:
-            net.learn(sample[0], sample[1])
+            c += net.learn(sample[0], sample[1])
+        cost_logs.append(c / len(data))
+        if i % 100 == 0:
+            plt.clf()
+            plt.plot(cost_logs)
+            plt.draw()
+            plt.pause(0.000001)
         net.apply_learning()
     #test
     print('### TESTING ###')
     for sample in data:
         print("for %s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
-    sys.exit()
+    # display cost over time
     # then exit
+    sys.exit()
 
     print(sys.argv)
     if len(sys.argv) < 2: # mauvais arguments

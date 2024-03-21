@@ -41,7 +41,6 @@ Paramètres généraux :
         self.showed = False
         self.window = None
 
-
     def show(self):
         self.showed = True
         self.window = ctk.CTkToplevel()
@@ -54,7 +53,7 @@ Paramètres généraux :
         self.window.textbox.configure(state=ctk.DISABLED)
         self.window.protocol("WM_DELETE_WINDOW", self.on_close)
         self.window.grab_set()
-    
+
     def on_close(self):
         self.showed = False
         self.window.destroy()
@@ -228,12 +227,12 @@ class EntityAttributes(ctk.CTkFrame):
 
         ctk.CTkLabel(frame, text="Population").grid(row=1, column=0)
         self.pop_size_var = ctk.IntVar()
-        ctk.CTkSlider(frame, from_=0, to=100, variable=self.pop_size_var).grid(row=1, column=1)
+        ctk.CTkSlider(frame, from_=0, to=200, variable=self.pop_size_var).grid(row=1, column=1)
         ctk.CTkLabel(frame, textvariable=self.pop_size_var, width=40).grid(row=1, column=2)
 
     def on_help(self):
         self.help_window.show()
-    
+
     def reset_params(self):
         rock = {}
         paper = {}
@@ -247,6 +246,7 @@ class EntityAttributes(ctk.CTkFrame):
         self.paper_settings.set_values(paper)
         self.sissors_settings.set_values(sissors)
         self.mod_scale_var.set(self.params['sim']['data']['mod_scale'])
+        self.pop_size_var.set(self.params['sim']['pop_size'])
 
     def get_data(self):
         rock = self.rock_settings.get_values()
@@ -257,11 +257,11 @@ class EntityAttributes(ctk.CTkFrame):
         return {
             "easter_egg": True, # TODO: easter egg from config.json
             "sim": {
-                "delta_time": 1,
-                "grid_size": [30, 30],
-                "tile_size": 10,
-                "pop_size": 20,
-                "layers": [10, 10],
+                "delta_time": self.params['sim']['delta_time'],
+                "grid_size": self.params['sim']['grid_size'],
+                "tile_size": self.params['sim']['tile_size'],
+                "pop_size": self.pop_size_var.get(),
+                "layers": self.params['sim']['layers'],
                 "data": data
             }
         }
@@ -346,7 +346,7 @@ class App(ctk.CTk):
         # using the user config
         cfg = self.settings.get_data()
         self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
-    
+
     def backup_logs(self):
         self.sim_log_t = self.sim.log_t.copy()
         self.sim_log_0 = self.sim.log_0.copy()
@@ -398,7 +398,7 @@ class App(ctk.CTk):
     def stop_sim(self):
         if self.sim_running:
             self.request_sim_stop = True
-    
+
     def step_sim(self):
         if self.sim_running:
             return

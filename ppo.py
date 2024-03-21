@@ -43,7 +43,7 @@ class Cost:
             return np.sum(np.square(output-target)) / output.shape[0]
 
         def deriv(output, target):
-            return (2 * output - 2 * target) / 2
+            return (2 * output - 2 * target) / output.shape[0]
 
 
 
@@ -51,10 +51,15 @@ class Layer:
     def new(input_size, n_count, activation, learning_rate, std_dev):
         layer = Layer()
         layer.gradients = np.zeros(shape=(input_size + 1, n_count))
+        layer.gradient_count = 0
         layer.params = np.random.normal(scale=std_dev, size=(input_size + 1, n_count))
         layer.activation = activation
         layer.learning_rate = learning_rate
         return layer
+
+    def add_gradient(self, grad):
+        self.gradients = np.add(self.gradients, grad)
+        self.gradient_count += 1
 
     def feed_forward(self, input_data, log_activations=False):
         input_data = np.c_[input_data, np.ones(input_data.shape[0])]  # add a column of ones to take account for the bias
@@ -62,8 +67,12 @@ class Layer:
         return self.activation.activate(s), s
 
     def apply_gradients(self): # just apply backpropagation
-        self.params += self.learning_rate * -self.gradients
+        if self.gradient_count == 0:
+            print('no gradients to apply')
+            return
+        self.params += -self.learning_rate * (self.gradients / self.gradient_count)
         self.gradients = np.zeros_like(self.gradients)
+        self.gradient_count = 0
 
     def previous_layer_deriv(self, raw_output_logs, layer_deriv): # compute deriv for the previous layer (propagate)
         drond_activation = self.activation.deriv(raw_output_logs)
@@ -75,8 +84,10 @@ class Layer:
         drond_activation = self.activation.deriv(raw_output_logs)
         full_local_back = drond_activation * layer_deriv # = bias gradient
         weights_deriv = np.matmul(input_logs.transpose(), full_local_back)
-        full_params_deriv = np.r_[weights_deriv, full_local_back]
-        self.gradients = np.add(self.gradients, full_params_deriv)
+        # print(weights_deriv)
+        # sys.exit()
+        full_params_deriv = np.r_[weights_deriv, np.zeros_like(full_local_back)]
+        self.add_gradient(full_params_deriv)
         return np.matmul(full_local_back, self.params[:self.params.shape[0]-1, :self.params.shape[1]].transpose())
 
 
@@ -153,10 +164,10 @@ if __name__ == "__main__":
         print("for %s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
     #learn
     print("### LEARNING ###")
-    for _ in range(10000):
+    for _ in range(1000000):
         for sample in data:
             net.learn(sample[0], sample[1])
-    net.apply_learning()
+        net.apply_learning()
     #test
     print('### TESTING ###')
     for sample in data:

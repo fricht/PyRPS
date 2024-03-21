@@ -155,7 +155,7 @@ bref, à completer ...
 
 if __name__ == "__main__":
     # tests things
-    net = Network.new([Layer.new(2, 2, Activation.Sigmoid, 0.1, 1), Layer.new(2, 1, Activation.Sigmoid, 0.1, 1)], Cost.MeanSquaredError)
+    net = Network.new([Layer.new(2, 2, Activation.Sigmoid, 1, 2), Layer.new(2, 1, Activation.Sigmoid, 1, 2)], Cost.MeanSquaredError)
     # XOR data
     data = [[np.array([0, 0]), np.array([0])], [np.array([1, 0]), np.array([1])], [np.array([0, 1]), np.array([1])], [np.array([1, 1]), np.array([0])]]
     #test

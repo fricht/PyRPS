@@ -26,9 +26,9 @@ Les dépendances sont présentes dans le fichier `requirements.txt`, l'installat
 
 ## Usage
 
-Pour lancer l'application, exécutez le fichier `app.py` :
+Pour lancer l'application, exécutez le fichier `app.py` dans le dossier `sources` :
 ```sh
-> python app.py
+> python sources/app.py
 ```
 
 Cela ouvrira l'interface graphique suivante :
@@ -70,7 +70,7 @@ Sur Windows, Tkinter doit être installé lors de l'installation de Python. Il n
 
 Pour installer Tkinter, téléchargez la dernière version l'installateur Python [ici](https://python.org/downloads), puis exécutez-le. Choisissez l'option `Modify` puis cochez `tcl/tk and IDLE` :
 
-![Installateur Python](doc/assets/tkinter.png)
+![Installateur Python](doc/assets/install_tkinter.png)
 
 Ensuite, cliquez sur `Next` puis `🛡️ Install`.
 

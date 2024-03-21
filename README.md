@@ -6,6 +6,8 @@ Une compétition évolutive à base d'intelligence artificielle, de pierres, de 
 
 ## Prérequis
 
+Python est requis pour éxecuter l'application. Vous pouvez le télécharger [ici](https://python.org/downloads).
+
 Les dépendances nécessaires au fonctionnement de l'application sont :
 - [CustomTkinter](https://customtkinter.tomschimansky.com/)
 - [Matplotlib](https://matplotlib.org/)
@@ -50,6 +52,7 @@ Le sous-menu `Paramètre` permet de modifier les différents paramètres de la s
 - `Reset` : réinitialise les paramètres aux derniers sauvegardés en mémoire
 - `Sauver` : sauvegarde les paramètres en mémoire
 - `Ecart type de modification` : facteur de mutation du réseau de neuronnes lors de la reproduction d'une entité
+- `Population` : nombre d'entités initialement présentes dans chaque population
 - `Vitesse` : vitesse de déplacement des entités (recommandé à 1 pour une meilleure expérience visuelle)
 - `Dégâts` : dégâts que peuvent infliger les entités à leurs proies
 - `Vol d'énergie` : énergie récupérée par les entités après une attaque
@@ -74,7 +77,7 @@ Pour installer Tkinter, téléchargez la dernière version l'installateur Python
 
 Ensuite, cliquez sur `Next` puis `🛡️ Install`.
 
-Tkinter est maintenant installé sur votre ordinateur. Vous pouvez dorénavant relancer l'application.
+Tkinter est maintenant installé sur votre ordinateur. Vous pouvez relancer l'application.
 </details>
 
 <details>
@@ -85,5 +88,5 @@ Pour installer Tkinter sur Linux, exécutez simplement la commande suivante :
 > sudo apt-get install python3-tk
 ```
 
-Tkinter est maintenant installé sur votre ordinateur. Vous pouvez dorénavant relancer l'application.
+Tkinter est maintenant installé sur votre ordinateur. Vous pouvez relancer l'application.
 </details>

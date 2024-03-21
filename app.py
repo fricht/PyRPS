@@ -34,7 +34,7 @@ Paramètres généraux :
     • Population : le nombre d'individus lors de la création de la simulation
 
 
-⚠ Pour appliquer les changements, il faut 'Réinitialiser' la simulation, même si elle n'est pas en train de tourner ⚠
+⚠ Les changements sont appliqués au démarrage d'une nouvelle simulation ⚠
 """
 
     def __init__(self):
@@ -67,7 +67,7 @@ class FrameTitle(ctk.CTkLabel):
         super().__init__(master=master, text=text, font=('Arial', 16))
 
 
-class MenuFrame(ctk.CTkFrame):
+class SimulationControl(ctk.CTkFrame):
     '''
     Classe pour gérer les boutons de contrôle de la simulation
     '''
@@ -116,7 +116,7 @@ class CanvasFrame(ctk.CTkFrame):
         self.canvas.grid(padx=10, pady=10)
 
 
-class SingleAttributeEdit(ctk.CTkFrame):
+class PopulationAttributesSettings(ctk.CTkFrame):
     '''
     Classe pour la modification des attributs d'une entité
     '''
@@ -185,7 +185,7 @@ class SingleAttributeEdit(ctk.CTkFrame):
         self.range_var.set(data['range'])
 
 
-class EntityAttributes(ctk.CTkFrame):
+class SimulationSettings(ctk.CTkFrame):
     '''
     Classe pour les paramètres des populations et de la simulation
     '''
@@ -209,9 +209,9 @@ class EntityAttributes(ctk.CTkFrame):
 
         self.create_general_settings(self.params_select.add("Général"))
 
-        self.rock_settings = SingleAttributeEdit(self.params_select.add("Pierre"))
-        self.paper_settings = SingleAttributeEdit(self.params_select.add("Feuille"))
-        self.sissors_settings = SingleAttributeEdit(self.params_select.add("Ciseaux"))
+        self.rock_settings = PopulationAttributesSettings(self.params_select.add("Pierre"))
+        self.paper_settings = PopulationAttributesSettings(self.params_select.add("Feuille"))
+        self.sissors_settings = PopulationAttributesSettings(self.params_select.add("Ciseaux"))
         self.rock_settings.pack()
         self.paper_settings.pack()
         self.sissors_settings.pack()
@@ -289,9 +289,9 @@ class App(ctk.CTk):
         self.iconphoto(True, ImageTk.PhotoImage(file='assets/logo.png'))
 
         self.sidebar_menu = ctk.CTkFrame(self)
-        self.menu = MenuFrame(master=self.sidebar_menu)
+        self.menu = SimulationControl(master=self.sidebar_menu)
         self.menu.grid(row=0, column=0, stick='nsew', padx=12, pady=(12, 6))
-        self.settings = EntityAttributes(master=self.sidebar_menu, params_pointer=self.config)
+        self.settings = SimulationSettings(master=self.sidebar_menu, params_pointer=self.config)
         self.settings.grid(row=1, column=0, stick='nsew', padx=12, pady=(6, 12))
         self.settings.reset_params()
         self.sidebar_menu.grid(row=0, column=0, stick='nsew')
@@ -343,9 +343,6 @@ class App(ctk.CTk):
         self.backup_logs()
         self.has_reset = True
         self.clear_canvas()
-        # using the user config
-        cfg = self.settings.get_data()
-        self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
 
     def backup_logs(self):
         self.sim_log_t = self.sim.log_t.copy()
@@ -383,7 +380,10 @@ class App(ctk.CTk):
     def launch_sim(self):
         if self.sim_running:
             return
-        self.has_reset = False
+        if self.has_reset:
+            self.has_reset = False
+            cfg = self.settings.get_data()
+            self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
         self.run_sim()
 
     def run_sim(self):

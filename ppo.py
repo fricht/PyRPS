@@ -158,7 +158,7 @@ bref, à completer ...
 
 if __name__ == "__main__":
     # tests things
-    net = Network.new([Layer.new(2, 2, Activation.Sigmoid, 10, 2), Layer.new(2, 1, Activation.Sigmoid, 10, 2)], Cost.MeanSquaredError)
+    net = Network.new([Layer.new(2, 10, Activation.Sigmoid, 1, 5), Layer.new(10, 1, Activation.Sigmoid, 1, 5)], Cost.MeanSquaredError)
     # XOR data
     data = [[np.array([0, 0]), np.array([0])], [np.array([1, 0]), np.array([1])], [np.array([0, 1]), np.array([1])], [np.array([1, 1]), np.array([0])]]
     #test
@@ -169,7 +169,7 @@ if __name__ == "__main__":
     cost_logs = []
     plt.ion()
     print("### LEARNING ###")
-    for i in range(10000):
+    for i in range(100000):
         c = 0
         for sample in data:
             c += net.learn(sample[0], sample[1])
@@ -178,7 +178,7 @@ if __name__ == "__main__":
             plt.clf()
             plt.plot(cost_logs)
             plt.draw()
-            plt.pause(0.000001)
+            plt.pause(0.0000000000001)
         net.apply_learning()
     #test
     print('### TESTING ###')

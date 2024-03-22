@@ -184,8 +184,8 @@ class SimulationSettings(ctk.CTkFrame):
         ctk.CTkButton(self, text='Aide', command=self.on_help).grid(row=1, column=0, pady=6)
 
         self.actions_frame = ctk.CTkFrame(self)
-        ctk.CTkButton(self.actions_frame, text="Reset", command=self.reset_params).grid(row=0, column=0, padx=6, pady=6)
-        ctk.CTkButton(self.actions_frame, text="Sauver", command=self.save_params).grid(row=0, column=1, padx=6, pady=6)
+        ctk.CTkButton(self.actions_frame, text="Réinitialiser", command=self.reset_params).grid(row=0, column=0, padx=6, pady=6)
+        ctk.CTkButton(self.actions_frame, text="Sauvegarder", command=self.save_params).grid(row=0, column=1, padx=6, pady=6)
         self.actions_frame.grid(row=2, column=0, pady=6)
 
         self.params_select = ctk.CTkTabview(self, bg_color=self.cget('fg_color'), width=420, height=250) # TODO: trouver la bonne valeur pour height

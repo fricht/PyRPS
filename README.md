@@ -95,6 +95,6 @@ Tkinter est maintenant installé sur votre ordinateur. Vous pouvez relancer l'ap
 #### Autres distros
 
 Utilisez votre gestionnaire de paquets pour installer tkinter.
-Dans tout les cas, internet est votre amis !
+Dans tout les cas, internet est votre ami !
 
 </details>

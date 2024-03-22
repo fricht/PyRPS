@@ -25,6 +25,10 @@ Pour lancer l'application, exécutez le fichier `app.py` dans le dossier `source
 > python sources/app.py
 ```
 
+> ℹ **Note**
+>
+> La commande `python` peut être différente selon votre système. Vous pouvez utiliser `python3` ou `py` à la place.
+
 Cela ouvrira l'interface graphique suivante :
 
 ![Interface de la simulation](assets/interface.png)

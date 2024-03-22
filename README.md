@@ -83,10 +83,18 @@ Tkinter est maintenant installé sur votre ordinateur. Vous pouvez relancer l'ap
 <details>
 <summary>Linux</summary>
 
+#### Debian
+
 Pour installer Tkinter sur Linux, exécutez simplement la commande suivante :
 ```sh
 > sudo apt-get install python3-tk
 ```
 
 Tkinter est maintenant installé sur votre ordinateur. Vous pouvez relancer l'application.
+
+#### Autres distros
+
+Utilisez votre gestionnaire de paquets pour installer tkinter.
+Dans tout les cas, internet est votre amis !
+
 </details>

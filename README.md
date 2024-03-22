@@ -28,39 +28,7 @@ Les dépendances sont présentes dans le fichier `requirements.txt`, l'installat
 
 ## Usage
 
-Pour lancer l'application, exécutez le fichier `app.py` dans le dossier `sources` :
-```sh
-> python sources/app.py
-```
-
-Cela ouvrira l'interface graphique suivante :
-
-![Interface de la simulation](doc/assets/interface.png)
-
-Cette interface se structure en deux parties :
-- A gauche se situe le menu permettant de contrôler la simulation et d'en changer les paramètres
-- A droite se trouve la carte où la simulation est représentée
-
-Le sous-menu `Simulation` permet de contrôler l'état de la simulation à l'aide des 4 boutons :
-- `Lancer la simulation` : démarre la simulation en temps réel
-- `Stopper la simulation` : met en pause la simulation
-- `Step` : avance la simulation d'une étape
-- `Réinitialiser` : affiche un graphique montrant l'évolution des populations, puis remet à zéro la simulation
-
-Le sous-menu `Paramètre` permet de modifier les différents paramètres de la simulation :
-- `Aide` : affiche de l'aide à propos des différents paramètres
-- `Reset` : réinitialise les paramètres aux derniers sauvegardés en mémoire
-- `Sauver` : sauvegarde les paramètres en mémoire
-- `Ecart type de modification` : facteur de mutation du réseau de neuronnes lors de la reproduction d'une entité
-- `Population` : nombre d'entités initialement présentes dans chaque population
-- `Vitesse` : vitesse de déplacement des entités (recommandé à 1 pour une meilleure expérience visuelle)
-- `Dégâts` : dégâts que peuvent infliger les entités à leurs proies
-- `Vol d'énergie` : énergie récupérée par les entités après une attaque
-- `Energie de naissance` : énergie possédé par une entité lors de sa création
-- `Energie pour reproduction` : énergie nécessaire à une entité pour se reproduire
-- `Facteur de vieillissement` : vitesse à laquelle les entités perdent de l'énergie
-- `Vision` : distance à laquelle peuvent voir les entités
-- `Portée` : distance à laquelle les entités peuvent attaquer
+Merci de consulter la [documentation](doc/Documentation.md) pour plus d'informations sur l'utilisation de l'application.
 
 ## Résolution de problèmes
 

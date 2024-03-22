@@ -32,6 +32,7 @@ Pour lancer l'application, exécutez le fichier `app.py` dans le dossier `source
 ```sh
 > python sources/app.py
 ```
+> Sous linux, utilisez la commande `python3`
 
 Cela ouvrira l'interface graphique suivante :
 

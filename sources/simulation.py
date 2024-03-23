@@ -40,7 +40,7 @@ class Network:
         return Network.from_params(params)
 
 
-# why the fuck is numpy slower than python iterations ???
+# why is numpy slower than python iterations ???
 # class _Network:
 # 	def __init__(self, params, gen=False):
 # 		if gen:
@@ -149,7 +149,7 @@ class Simulation:
 
     def place_entity_random(self, entity):
         x = random.randint(0, self.grid_size[0] - 1)
-        y = random.randint(0, self.grid_size[0] - 1)
+        y = random.randint(0, self.grid_size[1] - 1)
         self.map[x, y] = entity
 
     def delta_entity_type(self, e_ref, e):

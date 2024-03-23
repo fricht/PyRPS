@@ -35,7 +35,8 @@ class Activation:
 
         @np.vectorize
         def deriv(n):
-            return np.exp(- n) / np.square(1 + np.exp(- n))
+            expn = np.exp(- n)
+            return expn / np.square(1 + expn)
 
 
 
@@ -45,7 +46,7 @@ class Cost:
             return np.sum(np.square(output - target)) / output.shape[0]
 
         def deriv(output, target):
-            return (2 * output - 2 * target) / output.shape[0]
+            return 2 * (output - target) / output.shape[0]
 
 
 
@@ -174,7 +175,7 @@ if __name__ == "__main__":
         for sample in data:
             c += net.learn(sample[0], sample[1])
         cost_logs.append(c / len(data))
-        if i % 100 == 0:
+        if i % 500 == 0:
             plt.clf()
             plt.plot(cost_logs)
             plt.draw()

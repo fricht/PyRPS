@@ -1,9 +1,8 @@
 import numpy as np
 import sys
 import os
-import simulation as sim
+import sources.simulation as sim
 import matplotlib.pyplot as plt
-import pylab as pltl
 
 
 class Activation:
@@ -170,7 +169,7 @@ if __name__ == "__main__":
     cost_logs = []
     plt.ion()
     print("### LEARNING ###")
-    for i in range(100000):
+    for i in range(10000):
         c = 0
         for sample in data:
             c += net.learn(sample[0], sample[1])

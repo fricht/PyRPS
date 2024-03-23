@@ -136,6 +136,7 @@ class App(ctk.CTk):
             return
         if self.has_reset:
             self.apply_sim_settings()
+        self.sim_running = True
         self.run_sim()
     
     def apply_sim_settings(self):
@@ -144,11 +145,13 @@ class App(ctk.CTk):
         self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
 
     def run_sim(self):
-        if self.request_sim_stop:
+        if self.request_sim_stop or not self.sim_running:
             self.request_sim_stop = False
             self.sim_running = False
             return
         self.sim_running = self.sim.step()
+        if not self.sim_running:
+            self.reset_sim()
         self.update_canvas()
         self.after(self.sim_delta_time, self.run_sim)
 

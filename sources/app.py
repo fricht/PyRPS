@@ -147,7 +147,8 @@ class App(ctk.CTk):
     def apply_sim_settings(self):
         self.has_reset = False
         cfg = self.settings.get_data()
-        self.sim = Simulation(cfg['grid_size'], cfg['pop_size'], cfg['layers'], cfg['data'])
+        pop_size = min(cfg['pop_size'], cfg['grid_size'][0] * cfg['grid_size'][1])
+        self.sim = Simulation(cfg['grid_size'], pop_size, cfg['layers'], cfg['data'])
         self.canvas.change_size(cfg['grid_size'], cfg['tile_size'])
         self.tile_size = cfg['tile_size']
         self.load_entity_assets()

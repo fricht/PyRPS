@@ -253,7 +253,7 @@ class SimulationSettings(ctk.CTkFrame):
         rock = self.rock_settings.get_values()
         paper = self.paper_settings.get_values()
         sissors = self.sissors_settings.get_values()
-        data = {k: [paper[k], rock[k], sissors[k]] for k in paper.keys() & rock.keys() & sissors.keys()} # ? TODO: intersection vraiment nécessaire ?
+        data = {k: [paper[k], rock[k], sissors[k]] for k in paper.keys()}
         data['mod_scale'] = self.mod_scale_var.get()
         return {
             "delta_time": self.params['delta_time'],

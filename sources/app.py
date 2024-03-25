@@ -46,9 +46,9 @@ class App(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
 
         self.title('PyRPS Simulation')
+        self.assets_path = os.path.join(PROJECT_DIR, 'assets')
+        logo_path = os.path.join(self.assets_path, 'logo.png')
         self.wm_iconbitmap()
-        assets_path = os.path.join(PROJECT_DIR, 'assets')
-        logo_path = os.path.join(assets_path, 'logo.png')
         self.iconphoto(True, ImageTk.PhotoImage(file=logo_path))
 
         self.sidebar_menu = ctk.CTkFrame(self)
@@ -59,13 +59,6 @@ class App(ctk.CTk):
         self.sidebar_menu.grid(row=0, column=0, stick='nsew')
         self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])
         self.canvas.grid(row=0, column=1)
-
-        rock_path = os.path.join(assets_path, 'the_rock.png' if config['easter_egg'] else 'rock.png')
-        self.assets = {
-            'rock': self.load_image(rock_path, config['sim']['tile_size']),
-            'paper': self.load_image(os.path.join(assets_path, 'paper.png'), config['sim']['tile_size']),
-            'scissors': self.load_image(os.path.join(assets_path, 'scissors.png'), config['sim']['tile_size'])
-        }
 
         self.sim_running = False
         self.request_sim_stop = False
@@ -82,6 +75,14 @@ class App(ctk.CTk):
         self.menu.on_reset(self.reset_sim)
         self.menu.on_step(self.step_sim)
         self.menu.on_show_plot(self.show_plot)
+
+    def load_entity_assets(self):
+        rock_path = os.path.join(self.assets_path, 'the_rock.png' if self.config['easter_egg'] else 'rock.png')
+        self.assets = {
+            'rock': self.load_image(rock_path, self.tile_size),
+            'paper': self.load_image(os.path.join(self.assets_path, 'paper.png'), self.tile_size),
+            'scissors': self.load_image(os.path.join(self.assets_path, 'scissors.png'), self.tile_size)
+        }
 
     def load_image(self, path, size):
         img = Image.open(path).resize((size, size))
@@ -152,6 +153,8 @@ class App(ctk.CTk):
         cfg = self.settings.get_data()
         self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
         self.canvas.change_size(cfg['sim']['grid_size'], cfg['sim']['tile_size'])
+        self.tile_size = cfg['sim']['tile_size']
+        self.load_entity_assets()
 
     def run_sim(self):
         if self.request_sim_stop or not self.sim_running:

@@ -223,6 +223,11 @@ class SimulationSettings(ctk.CTkFrame):
         ctk.CTkEntry(master=frame, textvariable=self.grid_x_size_var).grid(row=2, column=1)
         ctk.CTkEntry(master=frame, textvariable=self.grid_y_size_var).grid(row=2, column=2)
 
+        ctk.CTkLabel(frame, text="Taille des cases").grid(row=3, column=0)
+        self.tile_size_var = ctk.IntVar()
+        ctk.CTkSlider(frame, from_=1, to=50, variable=self.tile_size_var).grid(row=3, column=1)
+        ctk.CTkLabel(frame, textvariable=self.tile_size_var, width=40).grid(row=3, column=2)
+
     def on_help(self):
         self.help_window.show()
 
@@ -242,6 +247,7 @@ class SimulationSettings(ctk.CTkFrame):
         self.pop_size_var.set(self.params['sim']['pop_size'])
         self.grid_x_size_var.set(self.params['sim']['grid_size'][0])
         self.grid_y_size_var.set(self.params['sim']['grid_size'][1])
+        self.tile_size_var.set(self.params['sim']['tile_size'])
 
     def get_data(self):
         rock = self.rock_settings.get_values()
@@ -253,7 +259,7 @@ class SimulationSettings(ctk.CTkFrame):
             "sim": {
                 "delta_time": self.params['sim']['delta_time'],
                 "grid_size": [int(self.grid_x_size_var.get()), int(self.grid_y_size_var.get())],
-                "tile_size": self.params['sim']['tile_size'],
+                "tile_size": self.tile_size_var.get(),
                 "pop_size": self.pop_size_var.get(),
                 "layers": self.params['sim']['layers'],
                 "data": data

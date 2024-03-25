@@ -66,11 +66,33 @@ class App(ctk.CTk):
         self.tile_size = config['sim']['tile_size']
         self.sim_delta_time = config['sim']['delta_time']
         self.sim = None
+        self.sim_log_t = []
+        self.sim_log_0 = []
+        self.sim_log_1 = []
+        self.sim_log_2 = []
         self.menu.on_run(self.launch_sim)
         self.menu.on_stop(self.stop_sim)
         self.menu.on_reset(self.reset_sim)
         self.menu.on_step(self.step_sim)
         self.menu.on_show_plot(self.show_plot)
+        self.init_plot()
+
+        self.protocol("WM_DELETE_WINDOW", self.on_app_close)
+
+    def on_app_close(self):
+        self.quit()
+
+    def init_plot(self, *_):
+        self.plot_opened = False
+        self.plot = plt.figure()
+        self.plot.canvas.mpl_connect('close_event', self.init_plot)
+
+    def legend_plot(self):
+        plt.title('Evolution des populations au cours du temps')
+        plt.legend(["Total", "Feuille", "Pierre", "Ciseaux"])
+        plt.grid(True)
+        plt.xlabel("Temps")
+        plt.ylabel("Nombre d'individus")
 
     def load_entity_assets(self):
         rock_path = os.path.join(self.assets_path, 'the_rock.png' if self.config['easter_egg'] else 'rock.png')
@@ -110,28 +132,26 @@ class App(ctk.CTk):
         self.sim_log_2 = self.sim.log_2.copy()
 
     def show_plot(self):
-        log_t = self.sim.log_t
-        log_0 = self.sim.log_0
-        log_1 = self.sim.log_1
-        log_2 = self.sim.log_2
+        self.plot_opened = True
         if self.has_reset:
             log_t = self.sim_log_t
             log_0 = self.sim_log_0
             log_1 = self.sim_log_1
             log_2 = self.sim_log_2
+        else:
+            log_t = self.sim.log_t
+            log_0 = self.sim.log_0
+            log_1 = self.sim.log_1
+            log_2 = self.sim.log_2
 
         iters = list(range(len(log_t)))
-        plt.clf()
-        plt.title('Evolution des populations au cours du temps')
+        self.plot.clear()
+        self.legend_plot()
         plt.plot(iters, log_t, color="grey")
         plt.plot(iters, log_0, color="red")
         plt.plot(iters, log_1, color="green")
         plt.plot(iters, log_2, color="blue")
-        plt.legend(["Total", "Feuille", "Pierre", "Ciseaux"])
-        plt.grid(True)
-        plt.xlabel("Temps")
-        plt.ylabel("Nombre d'individus")
-        plt.show()
+        self.plot.show()
 
     def clear_canvas(self):
         self.canvas.clear()
@@ -151,6 +171,7 @@ class App(ctk.CTk):
         self.sim = Simulation(cfg['grid_size'], pop_size, cfg['layers'], cfg['data'])
         self.canvas.change_size(cfg['grid_size'], cfg['tile_size'])
         self.tile_size = cfg['tile_size']
+        self.real_time_plot = cfg['real_time_plot']
         self.load_entity_assets()
 
     def run_sim(self):
@@ -161,6 +182,8 @@ class App(ctk.CTk):
         self.sim_running = self.sim.step()
         if not self.sim_running:
             self.reset_sim()
+        if self.plot_opened and self.real_time_plot:
+            self.show_plot()
         self.update_canvas()
         self.after(self.sim_delta_time, self.run_sim)
 

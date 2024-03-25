@@ -4,6 +4,7 @@ import os
 import sources.simulation as sim
 import matplotlib.pyplot as plt
 import random
+import json
 
 
 class Activation:
@@ -107,6 +108,10 @@ class Network:
         net.cost_func = cost_func
         return net
 
+    def from_file(filepath):
+        with open(os.path.join(filepath, "meta.json"), 'r') as f:
+            metadata = json.load(f)
+
     def feed_forward(self, input_data):
         input_data = np.array([input_data])
         for layer in self.layers:
@@ -144,24 +149,6 @@ class Network:
 
 
 
-def main(*args):
-    pass
-
-
-help_msg = """
-utilisation :
-
-    python3 ppo.py <fonction> [parametres ...]
-
-
-fonctions :
-
-    - ...
-
-bref, à completer ...
-"""
-
-
 class TrainableParam:
     def __init__(self, min, max, init=None, isint=False):
         self.min = min
@@ -190,7 +177,22 @@ class TrainableParam:
         return Activation.Sigmoid.activate(self.squished_value)
 
 
+
+def train_params(iterations, params):
+    pass
+
+
 if __name__ == "__main__":
+
+    # do test things
+
+    layers = []
+    net = Network.new(layers, Cost.MeanSquaredError)
+
+    # and just exit (temporarely)
+    sys.exit()
+
+
     print(sys.argv)
     if len(sys.argv) < 2: # mauvais arguments
         print("erreur, mauvais arguments\n`%s -h` ou `%s --help` pour afficher l'aide" % (sys.argv[0], sys.argv[0]))

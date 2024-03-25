@@ -3,6 +3,7 @@ import sys
 import os
 import sources.simulation as sim
 import matplotlib.pyplot as plt
+import random
 
 
 class Activation:
@@ -58,6 +59,11 @@ class Layer:
         layer.activation = activation
         layer.learning_rate = learning_rate
         return layer
+
+    def from_file(filename, activation, learning_rate):
+        layer = Layer()
+        layer.gradients = np.zeros_like(layer.params)
+        layer.gradient_count = 0
 
     def add_gradient(self, grad):
         self.gradients = np.add(self.gradients, grad)
@@ -156,38 +162,35 @@ bref, à completer ...
 """
 
 
-if __name__ == "__main__":
-    # tests things
-    net = Network.new([Layer.new(2, 10, Activation.Sigmoid, 1, 5), Layer.new(10, 1, Activation.Sigmoid, 1, 5)], Cost.MeanSquaredError)
-    # XOR data
-    data = [[np.array([0, 0]), np.array([0])], [np.array([1, 0]), np.array([1])], [np.array([0, 1]), np.array([1])], [np.array([1, 1]), np.array([0])]]
-    #test
-    print('### TESTING ###')
-    for sample in data:
-        print("%s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
-    #learn
-    cost_logs = []
-    plt.ion()
-    print("### LEARNING ###")
-    for i in range(10000):
-        c = 0
-        for sample in data:
-            c += net.learn(sample[0], sample[1])
-        cost_logs.append(c / len(data))
-        if i % 500 == 0:
-            plt.clf()
-            plt.plot(cost_logs)
-            plt.draw()
-            plt.pause(0.0000000000001)
-        net.apply_learning()
-    #test
-    print('### TESTING ###')
-    for sample in data:
-        print("for %s -> %s -> %s" % (sample[0], net.feed_forward(sample[0]), sample[1]))
-    # display cost over time
-    # then exit
-    sys.exit()
+class TrainableParam:
+    def __init__(self, min, max, init=None, isint=False):
+        self.min = min
+        self.max = max
+        self.delta = self.max - self.min
+        self.isint = isint
+        if init is not None:
+            self._value = init
+        else:
+            self._value = random.uniform(min, max)
 
+    def squished_value(self):
+        return -np.log(self.delta/(self.value - self.min)-1)
+
+    @property
+    def value(self):
+        if self.isint:
+            return round(self._value)
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self.value = min(self.max, max(self.min, value))
+
+    def get_computed_value(self):
+        return Activation.Sigmoid.activate(self.squished_value)
+
+
+if __name__ == "__main__":
     print(sys.argv)
     if len(sys.argv) < 2: # mauvais arguments
         print("erreur, mauvais arguments\n`%s -h` ou `%s --help` pour afficher l'aide" % (sys.argv[0], sys.argv[0]))

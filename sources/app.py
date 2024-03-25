@@ -183,7 +183,7 @@ class App(ctk.CTk):
             self.sim_running = False
             return
         self.sim_running = self.sim.step()
-        if not self.sim_running:
+        if not self.sim_running: # plus aucune entité en vie
             self.reset_sim()
         if self.plot_opened and self.real_time_plot:
             self.show_plot()

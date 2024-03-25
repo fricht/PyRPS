@@ -200,6 +200,9 @@ class SimulationSettings(ctk.CTkFrame):
         self.paper_settings.pack()
         self.sissors_settings.pack()
 
+        # init variables
+        self.reset_params()
+
     def create_general_settings(self, master):
         frame = ctk.CTkFrame(master, fg_color=master.cget('fg_color'))
         frame.pack()
@@ -213,6 +216,12 @@ class SimulationSettings(ctk.CTkFrame):
         self.pop_size_var = ctk.IntVar()
         ctk.CTkSlider(frame, from_=0, to=200, variable=self.pop_size_var).grid(row=1, column=1)
         ctk.CTkLabel(frame, textvariable=self.pop_size_var, width=40).grid(row=1, column=2)
+
+        ctk.CTkLabel(frame, text="Taille de la carte").grid(row=2, column=0)
+        self.grid_x_size_var = ctk.StringVar()
+        self.grid_y_size_var = ctk.StringVar()
+        ctk.CTkEntry(master=frame, textvariable=self.grid_x_size_var).grid(row=2, column=1)
+        ctk.CTkEntry(master=frame, textvariable=self.grid_y_size_var).grid(row=2, column=2)
 
     def on_help(self):
         self.help_window.show()
@@ -231,18 +240,19 @@ class SimulationSettings(ctk.CTkFrame):
         self.sissors_settings.set_values(sissors)
         self.mod_scale_var.set(self.params['sim']['data']['mod_scale'])
         self.pop_size_var.set(self.params['sim']['pop_size'])
+        self.grid_x_size_var.set(self.params['sim']['grid_size'][0])
+        self.grid_y_size_var.set(self.params['sim']['grid_size'][1])
 
     def get_data(self):
         rock = self.rock_settings.get_values()
         paper = self.paper_settings.get_values()
         sissors = self.sissors_settings.get_values()
-        data = {k: [paper[k], rock[k], sissors[k]] for k in paper.keys() & rock.keys() & sissors.keys()}
+        data = {k: [paper[k], rock[k], sissors[k]] for k in paper.keys() & rock.keys() & sissors.keys()} # ? TODO: intersection vraiment nécessaire ?
         data['mod_scale'] = self.mod_scale_var.get()
         return {
-            "easter_egg": True, # TODO: easter egg from config.json
             "sim": {
                 "delta_time": self.params['sim']['delta_time'],
-                "grid_size": self.params['sim']['grid_size'],
+                "grid_size": [int(self.grid_x_size_var.get()), int(self.grid_y_size_var.get())],
                 "tile_size": self.params['sim']['tile_size'],
                 "pop_size": self.pop_size_var.get(),
                 "layers": self.params['sim']['layers'],

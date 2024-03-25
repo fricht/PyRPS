@@ -19,7 +19,16 @@ class CanvasFrame(ctk.CTkFrame):
         super().__init__(master=master, fg_color=master.cget('fg_color'))
 
         self.canvas = ctk.CTkCanvas(master=self, width=grid_size[0] * tile_size, height=grid_size[1] * tile_size)
-        self.canvas.grid(padx=10, pady=10)
+        self.canvas.pack(padx=10, pady=10)
+    
+    def clear(self):
+        self.canvas.delete('all')
+    
+    def change_size(self, grid_size, tile_size):
+        self.canvas.config(width=grid_size[0] * tile_size, height=grid_size[1] * tile_size)
+    
+    def draw_entity(self, x, y, img):
+        self.canvas.create_image(x + 2, y + 2, image=img, anchor='nw')
 
 
 class App(ctk.CTk):
@@ -47,7 +56,6 @@ class App(ctk.CTk):
         self.menu.grid(row=0, column=0, stick='nsew', padx=12, pady=(12, 6))
         self.settings = SimulationSettings(master=self.sidebar_menu, params_pointer=self.config)
         self.settings.grid(row=1, column=0, stick='nsew', padx=12, pady=(6, 12))
-        self.settings.reset_params()
         self.sidebar_menu.grid(row=0, column=0, stick='nsew')
         self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])
         self.canvas.grid(row=0, column=1)
@@ -61,7 +69,7 @@ class App(ctk.CTk):
 
         self.sim_running = False
         self.request_sim_stop = False
-        self.has_reset = False
+        self.has_reset = True
         self.sim_grid_size = config['sim']['grid_size']
         self.tile_size = config['sim']['tile_size']
         self.sim_pop_size = config['sim']['pop_size']
@@ -90,7 +98,7 @@ class App(ctk.CTk):
                     img = self.assets['rock']
                 elif e.type == Entity.Types.SCISSORS:
                     img = self.assets['scissors']
-                self.canvas.canvas.create_image(i[0] * self.tile_size, i[1] * self.tile_size, image=img, anchor='nw')
+                self.canvas.draw_entity(i[0] * self.tile_size, i[1] * self.tile_size, img)
 
     def reset_sim(self):
         self.stop_sim()
@@ -129,7 +137,7 @@ class App(ctk.CTk):
         plt.show()
 
     def clear_canvas(self):
-        self.canvas.canvas.delete('all')
+        self.canvas.clear()
 
     def launch_sim(self):
         if self.sim_running:
@@ -143,6 +151,7 @@ class App(ctk.CTk):
         self.has_reset = False
         cfg = self.settings.get_data()
         self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
+        self.canvas.change_size(cfg['sim']['grid_size'], cfg['sim']['tile_size'])
 
     def run_sim(self):
         if self.request_sim_stop or not self.sim_running:

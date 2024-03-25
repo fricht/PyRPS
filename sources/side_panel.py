@@ -235,7 +235,7 @@ class SimulationSettings(ctk.CTkFrame):
         rock = {}
         paper = {}
         sissors = {}
-        for k, v in self.params['sim']['data'].items():
+        for k, v in self.params['data'].items():
             if type(v) in {tuple, list}:
                 paper[k] = v[0]
                 rock[k] = v[1]
@@ -243,11 +243,11 @@ class SimulationSettings(ctk.CTkFrame):
         self.rock_settings.set_values(rock)
         self.paper_settings.set_values(paper)
         self.sissors_settings.set_values(sissors)
-        self.mod_scale_var.set(self.params['sim']['data']['mod_scale'])
-        self.pop_size_var.set(self.params['sim']['pop_size'])
-        self.grid_x_size_var.set(self.params['sim']['grid_size'][0])
-        self.grid_y_size_var.set(self.params['sim']['grid_size'][1])
-        self.tile_size_var.set(self.params['sim']['tile_size'])
+        self.mod_scale_var.set(self.params['data']['mod_scale'])
+        self.pop_size_var.set(self.params['pop_size'])
+        self.grid_x_size_var.set(self.params['grid_size'][0])
+        self.grid_y_size_var.set(self.params['grid_size'][1])
+        self.tile_size_var.set(self.params['tile_size'])
 
     def get_data(self):
         rock = self.rock_settings.get_values()
@@ -256,14 +256,12 @@ class SimulationSettings(ctk.CTkFrame):
         data = {k: [paper[k], rock[k], sissors[k]] for k in paper.keys() & rock.keys() & sissors.keys()} # ? TODO: intersection vraiment nécessaire ?
         data['mod_scale'] = self.mod_scale_var.get()
         return {
-            "sim": {
-                "delta_time": self.params['sim']['delta_time'],
-                "grid_size": [int(self.grid_x_size_var.get()), int(self.grid_y_size_var.get())],
-                "tile_size": self.tile_size_var.get(),
-                "pop_size": self.pop_size_var.get(),
-                "layers": self.params['sim']['layers'],
-                "data": data
-            }
+            "delta_time": self.params['delta_time'],
+            "grid_size": [int(self.grid_x_size_var.get()), int(self.grid_y_size_var.get())],
+            "tile_size": self.tile_size_var.get(),
+            "pop_size": self.pop_size_var.get(),
+            "layers": self.params['layers'],
+            "data": data
         }
 
     def save_params(self):

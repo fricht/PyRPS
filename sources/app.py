@@ -54,7 +54,7 @@ class App(ctk.CTk):
         self.sidebar_menu = ctk.CTkFrame(self)
         self.menu = SimulationControl(master=self.sidebar_menu)
         self.menu.grid(row=0, column=0, stick='nsew', padx=12, pady=(12, 6))
-        self.settings = SimulationSettings(master=self.sidebar_menu, params_pointer=self.config)
+        self.settings = SimulationSettings(master=self.sidebar_menu, params_pointer=self.config['sim'])
         self.settings.grid(row=1, column=0, stick='nsew', padx=12, pady=(6, 12))
         self.sidebar_menu.grid(row=0, column=0, stick='nsew')
         self.canvas = CanvasFrame(master=self, tile_size=config['sim']['tile_size'], grid_size=config['sim']['grid_size'])
@@ -63,13 +63,9 @@ class App(ctk.CTk):
         self.sim_running = False
         self.request_sim_stop = False
         self.has_reset = True
-        self.sim_grid_size = config['sim']['grid_size']
         self.tile_size = config['sim']['tile_size']
-        self.sim_pop_size = config['sim']['pop_size']
-        self.sim_layers = config['sim']['layers']
-        self.sim_data = config['sim']['data']
         self.sim_delta_time = config['sim']['delta_time']
-        self.sim = Simulation(config['sim']['grid_size'], config['sim']['pop_size'], config['sim']['layers'], config['sim']['data'])
+        self.sim = None
         self.menu.on_run(self.launch_sim)
         self.menu.on_stop(self.stop_sim)
         self.menu.on_reset(self.reset_sim)
@@ -151,9 +147,9 @@ class App(ctk.CTk):
     def apply_sim_settings(self):
         self.has_reset = False
         cfg = self.settings.get_data()
-        self.sim = Simulation(cfg['sim']['grid_size'], cfg['sim']['pop_size'], cfg['sim']['layers'], cfg['sim']['data'])
-        self.canvas.change_size(cfg['sim']['grid_size'], cfg['sim']['tile_size'])
-        self.tile_size = cfg['sim']['tile_size']
+        self.sim = Simulation(cfg['grid_size'], cfg['pop_size'], cfg['layers'], cfg['data'])
+        self.canvas.change_size(cfg['grid_size'], cfg['tile_size'])
+        self.tile_size = cfg['tile_size']
         self.load_entity_assets()
 
     def run_sim(self):

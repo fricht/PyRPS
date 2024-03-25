@@ -6,6 +6,7 @@ from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import json
 import os.path
+from time import monotonic
 
 
 PROJECT_DIR = os.path.join(os.path.dirname(__file__), '..')
@@ -178,6 +179,7 @@ class App(ctk.CTk):
         self.load_entity_assets()
 
     def run_sim(self):
+        start_time = monotonic()
         if self.request_sim_stop or not self.sim_running:
             self.request_sim_stop = False
             self.sim_running = False
@@ -188,7 +190,9 @@ class App(ctk.CTk):
         if self.plot_opened and self.real_time_plot:
             self.show_plot()
         self.update_canvas()
-        self.after(self.sim_delta_time, self.run_sim)
+        time_taken = int((monotonic() - start_time) * 1000) # en ms
+        next_run_after = min(max(self.sim_delta_time - time_taken, 1), self.sim_delta_time)
+        self.after(next_run_after, self.run_sim)
 
     def stop_sim(self):
         if self.sim_running:

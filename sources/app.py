@@ -80,6 +80,7 @@ class App(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.on_app_close)
 
     def on_app_close(self):
+        self.stop_sim()
         self.quit()
 
     def init_plot(self, *_):
@@ -120,9 +121,11 @@ class App(ctk.CTk):
                 self.canvas.draw_entity(i[0] * self.tile_size, i[1] * self.tile_size, img)
 
     def reset_sim(self):
+        if self.has_reset:
+            return
+        self.has_reset = True
         self.stop_sim()
         self.backup_logs()
-        self.has_reset = True
         self.clear_canvas()
 
     def backup_logs(self):

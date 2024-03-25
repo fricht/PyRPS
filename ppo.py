@@ -61,10 +61,25 @@ class Layer:
         layer.learning_rate = learning_rate
         return layer
 
-    def from_file(filename, activation, learning_rate):
+    def from_file(filename):
         layer = Layer()
+        with open("%s.meta.json" % filename, 'r') as f:
+            metadata = json.load(f)
+        layer.activation = getattr(Activation, metadata["activation"])
+        layer.learning_rate = metadata["learning_rate"]
+        layer.params = np.load("%s.npy" % filename)
         layer.gradients = np.zeros_like(layer.params)
         layer.gradient_count = 0
+        return layer
+
+    def save_to(self, filename):
+        metadata = {
+            "activation": self.activation.__name__,
+            "learning_rate": self.learning_rate
+        }
+        with open("%s.meta.json" % filename, 'w') as f:
+            json.dump(metadata, f)
+        np.save("%s.npy" % filename, self.params, allow_pickle=False)  # disallow pickle to avoid cross-platform issues
 
     def add_gradient(self, grad):
         self.gradients = np.add(self.gradients, grad)
@@ -75,7 +90,7 @@ class Layer:
         s = np.matmul(input_data, self.params)
         return self.activation.activate(s), s
 
-    def apply_gradients(self): # just apply backpropagation
+    def apply_gradients(self):  # just apply backpropagation
         if self.gradient_count == 0:
             print('no gradients to apply')
             return
@@ -83,18 +98,16 @@ class Layer:
         self.gradients = np.zeros_like(self.gradients)
         self.gradient_count = 0
 
-    def previous_layer_deriv(self, raw_output_logs, layer_deriv): # compute deriv for the previous layer (propagate)
+    def previous_layer_deriv(self, raw_output_logs, layer_deriv):  # compute deriv for the previous layer (propagate)
         drond_activation = self.activation.deriv(raw_output_logs)
         full_local_back = drond_activation * layer_deriv
         return np.matmul(full_local_back, self.params[:self.params.shape[0]-1, :self.params.shape[1]].transpose())
 
-    def full_backprop(self, input_logs, raw_output_logs, layer_deriv): # apply backpropagation and compute for the previous layer (propagate)
+    def full_backprop(self, input_logs, raw_output_logs, layer_deriv):  # apply backpropagation and compute for the previous layer (propagate)
         # here i'm not using the previous method to avoid computing the same thing twice
         drond_activation = self.activation.deriv(raw_output_logs)
-        full_local_back = drond_activation * layer_deriv # = bias gradient
+        full_local_back = drond_activation * layer_deriv  # = bias gradient
         weights_deriv = np.matmul(input_logs.transpose(), full_local_back)
-        # print(weights_deriv)
-        # sys.exit()
         full_params_deriv = np.r_[weights_deriv, np.zeros_like(full_local_back)]
         self.add_gradient(full_params_deriv)
         return np.matmul(full_local_back, self.params[:self.params.shape[0]-1, :self.params.shape[1]].transpose())
@@ -111,6 +124,32 @@ class Network:
     def from_file(filepath):
         with open(os.path.join(filepath, "meta.json"), 'r') as f:
             metadata = json.load(f)
+        net = Network()
+        net.cost_func = getattr(Cost, metadata['cost'])
+        net.layers = []
+        for l_name in metadata['layers']:
+            net.layers.append(Layer.from_file(os.path.join(filepath, l_name)))
+        return net
+
+    def save_to(self, filepath):
+        """
+        str filepath: the path to the directory where the model will be contained
+        """
+        if os.path.exists(filepath):
+            for item in os.listdir(filepath):
+                os.remove(os.path.join(filepath, item))
+        else:
+            os.makedirs(filepath)
+        metadata = {
+            "cost": self.cost_func.__name__,
+            "layers": []
+        }
+        for n, layer in enumerate(self.layers):
+            layer_name = "layer_%i" % n
+            layer.save_to(os.path.join(filepath, layer_name))
+            metadata["layers"].append(layer_name)
+        with open(os.path.join(filepath, "meta.json"), 'w') as f:
+            json.dump(metadata, f)
 
     def feed_forward(self, input_data):
         input_data = np.array([input_data])
@@ -186,8 +225,17 @@ if __name__ == "__main__":
 
     # do test things
 
-    layers = []
+    layers = [
+        Layer.new(2, 5, Activation.Sigmoid, 1, 5),
+        Layer.new(5, 5, Activation.Sigmoid, 1, 5),
+        Layer.new(5, 1, Activation.Sigmoid, 1, 5),
+    ]
     net = Network.new(layers, Cost.MeanSquaredError)
+    data = np.random.normal(scale=10, size=(2,))
+    print(net.feed_forward(data))
+    net.save_to('./mynet')
+    net2 = Network.from_file('./mynet')
+    print(net2.feed_forward(data))
 
     # and just exit (temporarely)
     sys.exit()

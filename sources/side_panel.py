@@ -209,28 +209,28 @@ class SimulationSettings(ctk.CTkFrame):
 
         ctk.CTkLabel(frame, text="Écart type de modification").grid(row=0, column=0, padx=(0, 6))
         self.mod_scale_var = ctk.DoubleVar()
-        ctk.CTkSlider(frame, from_=0, to=1, variable=self.mod_scale_var).grid(row=0, column=1)
-        ctk.CTkLabel(frame, textvariable=self.mod_scale_var, width=40).grid(row=0, column=2)
+        ctk.CTkSlider(frame, from_=0, to=1, variable=self.mod_scale_var).grid(row=0, column=1, columnspan=2)
+        ctk.CTkLabel(frame, textvariable=self.mod_scale_var, width=40).grid(row=0, column=3)
 
         ctk.CTkLabel(frame, text="Population").grid(row=1, column=0)
         self.pop_size_var = ctk.IntVar()
-        ctk.CTkSlider(frame, from_=0, to=200, variable=self.pop_size_var).grid(row=1, column=1)
-        ctk.CTkLabel(frame, textvariable=self.pop_size_var, width=40).grid(row=1, column=2)
+        ctk.CTkSlider(frame, from_=0, to=200, variable=self.pop_size_var).grid(row=1, column=1, columnspan=2)
+        ctk.CTkLabel(frame, textvariable=self.pop_size_var, width=40).grid(row=1, column=3)
 
         ctk.CTkLabel(frame, text="Taille de la carte").grid(row=2, column=0)
         self.grid_x_size_var = ctk.StringVar()
         self.grid_y_size_var = ctk.StringVar()
-        ctk.CTkEntry(master=frame, textvariable=self.grid_x_size_var).grid(row=2, column=1)
-        ctk.CTkEntry(master=frame, textvariable=self.grid_y_size_var).grid(row=2, column=2)
+        ctk.CTkEntry(master=frame, textvariable=self.grid_x_size_var, width=40).grid(row=2, column=1)
+        ctk.CTkEntry(master=frame, textvariable=self.grid_y_size_var, width=40).grid(row=2, column=2)
 
         ctk.CTkLabel(frame, text="Taille des cases").grid(row=3, column=0)
         self.tile_size_var = ctk.IntVar()
-        ctk.CTkSlider(frame, from_=1, to=50, variable=self.tile_size_var).grid(row=3, column=1)
-        ctk.CTkLabel(frame, textvariable=self.tile_size_var, width=40).grid(row=3, column=2)
+        ctk.CTkSlider(frame, from_=1, to=50, variable=self.tile_size_var).grid(row=3, column=1, columnspan=2)
+        ctk.CTkLabel(frame, textvariable=self.tile_size_var, width=40).grid(row=3, column=3)
 
         ctk.CTkLabel(frame, text='Graphe en temps réel').grid(row=4, column=0)
         self.live_plotting_var = ctk.BooleanVar()
-        ctk.CTkCheckBox(frame, variable=self.live_plotting_var, text='', width=0).grid(row=4, column=1)
+        ctk.CTkCheckBox(frame, variable=self.live_plotting_var, text='', width=0).grid(row=4, column=1, columnspan=2)
 
     def on_help(self):
         self.help_window.show()

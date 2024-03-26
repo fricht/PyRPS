@@ -199,9 +199,6 @@ class TrainableParam:
         else:
             self._value = random.uniform(min, max)
 
-    def squished_value(self):
-        return -np.log(self.delta/(self.value - self.min)-1)
-
     @property
     def value(self):
         if self.isint:
@@ -212,8 +209,16 @@ class TrainableParam:
     def value(self, value):
         self.value = min(self.max, max(self.min, value))
 
-    def get_computed_value(self):
-        return Activation.Sigmoid.activate(self.squished_value)
+    def get_squished_value(self):
+        return -np.log(self.delta/(self.value - self.min)-1)
+
+    def get_linear_value(self):
+        return (self.value - self.min)/self.delta
+
+
+class TrainableSim:
+    def __init__(self):
+        self.sim = sim.Simulation()
 
 
 

@@ -76,11 +76,15 @@ class App(ctk.CTk):
         self.menu.on_step(self.step_sim)
         self.menu.on_show_plot(self.show_plot)
         self.init_plot()
+        self.settings.live_plotting_var.trace_add('write', self.update_live_plotting)
 
         self.protocol("WM_DELETE_WINDOW", self.on_app_close)
 
     def on_app_close(self):
         self.quit()
+    
+    def update_live_plotting(self, *_):
+        self.live_plotting = self.settings.live_plotting_var.get()
 
     def init_plot(self, *_):
         self.plot_opened = False
@@ -171,7 +175,7 @@ class App(ctk.CTk):
         self.sim = Simulation(cfg['grid_size'], pop_size, cfg['layers'], cfg['data'])
         self.canvas.change_size(cfg['grid_size'], cfg['tile_size'])
         self.tile_size = cfg['tile_size']
-        self.real_time_plot = cfg['real_time_plot']
+        self.live_plotting = cfg['live_plotting']
         self.load_entity_assets()
 
     def run_sim(self):
@@ -182,7 +186,7 @@ class App(ctk.CTk):
         self.sim_running = self.sim.step()
         if not self.sim_running:
             self.reset_sim()
-        if self.plot_opened and self.real_time_plot:
+        if self.plot_opened and self.live_plotting:
             self.show_plot()
         self.update_canvas()
         self.after(self.sim_delta_time, self.run_sim)

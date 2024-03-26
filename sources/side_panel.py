@@ -214,7 +214,7 @@ class SimulationSettings(ctk.CTkFrame):
 
         ctk.CTkLabel(frame, text="Population").grid(row=1, column=0)
         self.pop_size_var = ctk.IntVar()
-        ctk.CTkSlider(frame, from_=0, to=200, variable=self.pop_size_var).grid(row=1, column=1, columnspan=2)
+        ctk.CTkSlider(frame, from_=0, to=1000, variable=self.pop_size_var).grid(row=1, column=1, columnspan=2)
         ctk.CTkLabel(frame, textvariable=self.pop_size_var, width=40).grid(row=1, column=3)
 
         ctk.CTkLabel(frame, text="Taille de la carte").grid(row=2, column=0)

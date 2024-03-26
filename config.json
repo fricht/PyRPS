@@ -2,11 +2,11 @@
     "easter_egg": false,
     "sim": {
         "delta_time": 100,
-        "grid_size": [20, 20],
+        "grid_size": [20, 20]
         "tile_size": 20,
         "pop_size": 20,
         "layers": [10, 10],
-        "real_time_plot": false,
+        "live_plotting": false,
         "data": {
             "speed": [1, 1, 1],
             "damage": [8, 8, 8],

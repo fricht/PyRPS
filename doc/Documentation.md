@@ -83,6 +83,12 @@ Ces paramètres modifient la configuration générale de la simulation :
 
 - `Population` : Défini le nombre d'entités initialement présentes dans chaque population. Le nombre total d'entités au début d'une simulation est donc ce paramètre multiplié par 3. L'augmentation de ce paramètre à un fort impact sur les performances de la simulation en temps réel.
 
+- `Taile de la carte` : Défini les dimensions X et Y de la carte pour la prochaine simulation.
+
+- `Taille des cases` : Défini la taille des entités sur la carte. Pour une même taille de carte, une plus grande taille des cases augmente la taille du caneva.
+
+- `Graphe en temps réel` : Active ou désactive la mise à jour en temps réel du graphe durant la simulation. Ce paramètre est appliqué instantanément (pas besoin de recommencer une simulation)
+
 ### Paramètres des populations
 
 ![Paramètres des populations](assets/population_settings.png)
@@ -117,7 +123,7 @@ Cette simulation comporte 3 populations différentes qui possède chacune une po
 
 ## La carte
 
-La simulation se déroule sur une carte rectangulaire topologogiquement assimilable à un tore, c'est à dire que les entités qui sortent d'un côté de la carte réapparaissent de l'autre côté. Cette carte est divisé en cases, et chaque case ne peut contenir qu'une seule entité. 
+La simulation se déroule sur une carte rectangulaire topologiquement assimilable à un tore, c'est à dire que les entités qui sortent d'un côté de la carte réapparaissent de l'autre côté. Cette carte est divisé en cases, et chaque case ne peut contenir qu'une seule entité. 
 <!-- Les dimensions de la carte ainsi que la taille des cases sont définies dans les [paramètres généraux](#paramètres-généraux) de la simulation. -->
 
 ## Les entités

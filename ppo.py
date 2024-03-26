@@ -5,6 +5,7 @@ import sources.simulation as sim
 import matplotlib.pyplot as plt
 import random
 import json
+import multiprocessing as mp
 
 
 class Activation:
@@ -227,11 +228,12 @@ class TrainableParam:
 
 
 class TrainableSim:
-    def __init__(self, grid_size, pop_size, network_layers, data, learning_rate):
+    def __init__(self, grid_size, pop_size, network_layers, data, learning_rate, max_time=100000):
         self.grid_size = grid_size
         self.pop_size = pop_size
         self.network_layers = network_layers
         self.learning_rate = learning_rate
+        self.max_time = max_time
         self._data = data
         self.trainable_count = 0
         self.trainable_params = []
@@ -266,6 +268,8 @@ class TrainableSim:
         sim = sim.Simulation(self.grid_size, self.pop_size, self.network_layers, self.data)
         while sim.step():
             n += 1
+            if n > self.max_time:
+                break
         queue.put([self.network_data, np.array([n])])
 
 

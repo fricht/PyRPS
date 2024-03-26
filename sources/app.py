@@ -6,6 +6,7 @@ from PIL import ImageTk, Image
 import matplotlib.pyplot as plt
 import json
 import os.path
+from time import monotonic
 
 
 PROJECT_DIR = os.path.join(os.path.dirname(__file__), '..')
@@ -65,6 +66,7 @@ class App(ctk.CTk):
         self.has_reset = True
         self.tile_size = config['sim']['tile_size']
         self.sim_delta_time = config['sim']['delta_time']
+        self.settings.delta_time_var.trace_add('write', self.update_delta_time)
         self.sim = None
         self.sim_log_t = []
         self.sim_log_0 = []
@@ -79,6 +81,9 @@ class App(ctk.CTk):
         self.settings.live_plotting_var.trace_add('write', self.update_live_plotting)
 
         self.protocol("WM_DELETE_WINDOW", self.on_app_close)
+    
+    def update_delta_time(self, *_):
+        self.sim_delta_time = self.settings.delta_time_var.get()
 
     def on_app_close(self):
         self.stop_sim()
@@ -182,6 +187,7 @@ class App(ctk.CTk):
         self.load_entity_assets()
 
     def run_sim(self):
+        start_time = monotonic()
         if self.request_sim_stop or not self.sim_running:
             self.request_sim_stop = False
             self.sim_running = False
@@ -192,7 +198,9 @@ class App(ctk.CTk):
         if self.plot_opened and self.live_plotting:
             self.show_plot()
         self.update_canvas()
-        self.after(self.sim_delta_time, self.run_sim)
+        time_taken = int((monotonic() - start_time) * 1000) # en ms
+        next_run_after = min(max(self.sim_delta_time - time_taken, 1), self.sim_delta_time)
+        self.after(next_run_after, self.run_sim)
 
     def stop_sim(self):
         if self.sim_running:

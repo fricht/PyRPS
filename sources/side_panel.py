@@ -232,6 +232,11 @@ class SimulationSettings(ctk.CTkFrame):
         self.live_plotting_var = ctk.BooleanVar()
         ctk.CTkCheckBox(frame, variable=self.live_plotting_var, text='', width=0).grid(row=4, column=1, columnspan=2)
 
+        ctk.CTkLabel(frame, text='Delta time').grid(row=5, column=0)
+        self.delta_time_var = ctk.IntVar()
+        ctk.CTkSlider(frame, from_=1, to=1000, variable=self.delta_time_var).grid(row=5, column=1)
+        ctk.CTkLabel(frame, textvariable=self.delta_time_var).grid(row=5, column=2)
+
     def on_help(self):
         self.help_window.show()
 
@@ -253,6 +258,7 @@ class SimulationSettings(ctk.CTkFrame):
         self.grid_y_size_var.set(self.params['grid_size'][1])
         self.tile_size_var.set(self.params['tile_size'])
         self.live_plotting_var.set(self.params['live_plotting'])
+        self.delta_time_var.set(self.params['delta_time'])
 
     def get_data(self):
         rock = self.rock_settings.get_values()

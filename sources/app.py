@@ -160,12 +160,12 @@ class App(ctk.CTk):
 
         iters = list(range(len(log_t)))
         self.plot.clear()
-        self.legend_plot()
         plt.plot(iters, log_t, color="black")
         plt.plot(iters, log_0, color="red")
         plt.plot(iters, log_1, color="green")
         plt.plot(iters, log_2, color="blue")
         plt.plot(iters, log_mean, color="grey", linestyle="--")
+        self.legend_plot()
         self.plot.show()
 
     def clear_canvas(self):

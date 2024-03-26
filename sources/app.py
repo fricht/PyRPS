@@ -99,7 +99,7 @@ class App(ctk.CTk):
 
     def legend_plot(self):
         plt.title('Evolution des populations au cours du temps')
-        plt.legend(["Total", "Feuille", "Pierre", "Ciseaux"])
+        plt.legend(["Total", "Feuille", "Pierre", "Ciseaux", 'Moyenne'])
         plt.grid(True)
         plt.xlabel("Temps")
         plt.ylabel("Nombre d'individus")
@@ -155,14 +155,17 @@ class App(ctk.CTk):
             log_0 = self.sim.log_0
             log_1 = self.sim.log_1
             log_2 = self.sim.log_2
+        
+        log_mean = np.mean([log_0, log_1, log_2], axis=0)
 
         iters = list(range(len(log_t)))
         self.plot.clear()
         self.legend_plot()
-        plt.plot(iters, log_t, color="grey")
+        plt.plot(iters, log_t, color="black")
         plt.plot(iters, log_0, color="red")
         plt.plot(iters, log_1, color="green")
         plt.plot(iters, log_2, color="blue")
+        plt.plot(iters, log_mean, color="grey", linestyle="--")
         self.plot.show()
 
     def clear_canvas(self):

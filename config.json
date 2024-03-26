@@ -1,8 +1,8 @@
 {
     "easter_egg": false,
     "sim": {
-        "delta_time": 1,
-        "grid_size": [30, 30],
+        "delta_time": 100,
+        "grid_size": [20, 20]
         "tile_size": 20,
         "pop_size": 20,
         "layers": [10, 10],

@@ -189,6 +189,9 @@ class Network:
 
 
 class TrainableParam:
+    """
+    some functions i use : https://www.desmos.com/calculator/srhiwurbop
+    """
     def __init__(self, min, max, init=None, isint=False):
         self.min = min
         self.max = max
@@ -215,10 +218,55 @@ class TrainableParam:
     def get_linear_value(self):
         return (self.value - self.min)/self.delta
 
+    def sig_inv_deriv(self, x):
+        d = x - self.min
+        return self.delta / (np.square(d) * ((D) / (d) - 1))
+
+    def update(self, delta, value):
+        self.value = self._value + self.sig_inv_deriv(value) * delta
+
 
 class TrainableSim:
-    def __init__(self):
-        self.sim = sim.Simulation()
+    def __init__(self, grid_size, pop_size, network_layers, data, learning_rate):
+        self.grid_size = grid_size
+        self.pop_size = pop_size
+        self.network_layers = network_layers
+        self.learning_rate = learning_rate
+        self._data = data
+        self.trainable_count = 0
+        self.trainable_params = []
+        for v in data.values():
+            for sub_v in v:
+                if type(sub_v) is TrainableParam:
+                    self.trainable_count += 1
+                    self.trainable_params.append(sub_v)
+
+    @property
+    def data(self):
+        data = {}
+        for k, v in self._data.items():
+            data[k] = []
+            for value in v:
+                if type(value) is TrainableParam:
+                    data[k].append(value.value)
+                else:
+                    data[k].append(value)
+        return data
+
+    @property
+    def network_data(self):
+        return [v.get_linear_value() for v in self.trainable_params]
+
+    def update_params(self, deltas):
+        for param, delta in zip(self.trainable_params, deltas):
+            param.update(delta * self.learning_rate)
+
+    def external_sim(self, queue):
+        n = 0
+        sim = sim.Simulation(self.grid_size, self.pop_size, self.network_layers, self.data)
+        while sim.step():
+            n += 1
+        queue.put([self.network_data, np.array([n])])
 
 
 

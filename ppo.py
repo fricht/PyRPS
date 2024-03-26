@@ -228,7 +228,7 @@ class TrainableParam:
 
 
 class TrainableSim:
-    def __init__(self, grid_size, pop_size, network_layers, data, learning_rate, max_time=100000):
+    def __init__(self, grid_size, pop_size, network_layers, data, learning_rate, max_time=100_000):
         self.grid_size = grid_size
         self.pop_size = pop_size
         self.network_layers = network_layers
@@ -274,8 +274,19 @@ class TrainableSim:
 
 
 
-def train_params(iterations, params):
-    pass
+def sample_data(trainable_sims):
+    data = []
+    ma_grosse_queue = mp.Queue()  # no offence
+    for p in trainable_sims:
+        mp.Process(p.external_sim(ma_grosse_queue)).start()
+    for _ in range(len(train_params)):
+        data.append(ma_grosse_queue.get())
+    return data
+
+
+def train_params(iterations, trainable_sims_list):
+    for i in iterations:
+        data = sample_data
 
 
 if __name__ == "__main__":

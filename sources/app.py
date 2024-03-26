@@ -66,6 +66,7 @@ class App(ctk.CTk):
         self.has_reset = True
         self.tile_size = config['sim']['tile_size']
         self.sim_delta_time = config['sim']['delta_time']
+        self.settings.delta_time_var.trace_add('write', self.update_delta_time)
         self.sim = None
         self.sim_log_t = []
         self.sim_log_0 = []
@@ -79,6 +80,9 @@ class App(ctk.CTk):
         self.init_plot()
 
         self.protocol("WM_DELETE_WINDOW", self.on_app_close)
+    
+    def update_delta_time(self, *_):
+        self.sim_delta_time = self.settings.delta_time_var.get()
 
     def on_app_close(self):
         self.stop_sim()

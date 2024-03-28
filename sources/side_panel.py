@@ -234,8 +234,8 @@ class SimulationSettings(ctk.CTkFrame):
 
         ctk.CTkLabel(frame, text='Delta time').grid(row=5, column=0)
         self.delta_time_var = ctk.IntVar()
-        ctk.CTkSlider(frame, from_=1, to=1000, variable=self.delta_time_var).grid(row=5, column=1)
-        ctk.CTkLabel(frame, textvariable=self.delta_time_var).grid(row=5, column=2)
+        ctk.CTkSlider(frame, from_=1, to=1000, variable=self.delta_time_var).grid(row=5, column=1, columnspan=2)
+        ctk.CTkLabel(frame, textvariable=self.delta_time_var).grid(row=5, column=3)
 
     def on_help(self):
         self.help_window.show()

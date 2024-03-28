@@ -107,7 +107,10 @@ class Entity:
 
 
 class Simulation:
-    def __init__(self, grid_size, pop_size, internal_neurons, data):
+    def __init__(self, grid_size, pop_size, internal_neurons, data, networks=None):
+        self.last_paper_network = None
+        self.last_rock_network = None
+        self.last_scissors_network = None
         # logs
         self.log_0 = []
         self.log_1 = []
@@ -127,7 +130,7 @@ class Simulation:
         self.internal_neurons = internal_neurons
         self.map = np.empty(shape=self.grid_size, dtype=object)
         self.tick = 0
-        self.generate(pop_size, internal_neurons)
+        self.generate(pop_size, internal_neurons, networks)
 
     def reset(self): # should be useless
         self.map = np.empty(shape=self.grid_size, dtype=object)
@@ -138,11 +141,19 @@ class Simulation:
         self.log_t = []
         self.generate(self.pop_size, self.internal_neurons)
 
-    def generate(self, pop_size, net_size):
+    def generate(self, pop_size, net_size, networks):
         for _ in range(pop_size):
-            rock = Entity(Entity.Types.ROCK, Network.new([(2 * self.vision[Entity.Types.ROCK] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[Entity.Types.ROCK][0], self.loss_factor[0])
-            paper = Entity(Entity.Types.PAPER, Network.new([(2 * self.vision[Entity.Types.PAPER] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[Entity.Types.PAPER][0], self.loss_factor[1])
-            scissors = Entity(Entity.Types.SCISSORS, Network.new([(2 * self.vision[Entity.Types.SCISSORS] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[Entity.Types.SCISSORS][0], self.loss_factor[2])
+            if networks:
+                rock_network = networks[0].child(self.mod_scale)
+                paper_network = networks[1].child(self.mod_scale)
+                scissors_network = networks[2].child(self.mod_scale)
+            else:
+                rock_network = Network.new([(2 * self.vision[Entity.Types.ROCK] + 1) ** 2 * 3 - 1, net_size, 4])
+                paper_network = Network.new([(2 * self.vision[Entity.Types.PAPER] + 1) ** 2 * 3 - 1, net_size, 4])
+                scissors_network = Network.new([(2 * self.vision[Entity.Types.SCISSORS] + 1) ** 2 * 3 - 1, net_size, 4])
+            rock = Entity(Entity.Types.ROCK, rock_network, self.energy[Entity.Types.ROCK][0], self.loss_factor[0])
+            paper = Entity(Entity.Types.PAPER, paper_network, self.energy[Entity.Types.PAPER][0], self.loss_factor[1])
+            scissors = Entity(Entity.Types.SCISSORS, scissors_network, self.energy[Entity.Types.SCISSORS][0], self.loss_factor[2])
             self.place_entity_random(rock)
             self.place_entity_random(paper)
             self.place_entity_random(scissors)
@@ -170,6 +181,15 @@ class Simulation:
         for ind, entity in np.ndenumerate(self.map):
             if entity is not None:
                 if entity.energy <= 0:
+                    if entity.type == Entity.Types.PAPER and self.log_0[-2] == 1:
+                        self.last_paper_network = entity.network
+                        print('saved paper')
+                    elif entity.type == Entity.Types.ROCK and self.log_1[-2] == 1:
+                        self.last_rock_network = entity.network
+                        print('saved rock')
+                    elif entity.type == Entity.Types.SCISSORS and self.log_2[-2] == 1:
+                        self.last_scissors_network = entity.network
+                        print('saved scissors')
                     continue
                 # compute vision
                 vision = np.zeros(shape=((2 * self.vision[entity.type] + 1) ** 2 - 1, 3))

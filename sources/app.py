@@ -183,7 +183,11 @@ class App(ctk.CTk):
         self.has_reset = False
         cfg = self.settings.get_data()
         pop_size = min(cfg['pop_size'], cfg['grid_size'][0] * cfg['grid_size'][1])
-        self.sim = Simulation(cfg['grid_size'], pop_size, cfg['layers'], cfg['data'])
+        if self.sim:
+            networks = [self.sim.last_rock_network, self.sim.last_paper_network, self.sim.last_scissors_network]
+        else:
+            networks = None
+        self.sim = Simulation(cfg['grid_size'], pop_size, cfg['layers'], cfg['data'], networks)
         self.canvas.change_size(cfg['grid_size'], cfg['tile_size'])
         self.tile_size = cfg['tile_size']
         self.live_plotting = cfg['live_plotting']

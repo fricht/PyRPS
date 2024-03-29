@@ -1,5 +1,10 @@
 # PyRPS - Trophées NSI
 
+## ⚠ Trophées NSI ⚠
+
+Pour les trophées NSI, merci de télécharger le code [ici]().
+Version gelée de la date de rendu.
+
 ## Description
 
 Une compétition évolutive à base d'intelligence artificielle, de pierres, de papier et de ciseaux qui simule le célèbre jeu à grande échelle pour déterminer quel camp est le meilleur.

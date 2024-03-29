@@ -8,6 +8,7 @@ class HelpWindowManager:
 
     message = """
 La simulation est asymétrique : chaque population peut avoir des caractéristiques différentes des autres.
+La carte est homéomorphe à un tore : en sortant d'un coté, une entité revient de l'autre.
 
 
 Pour chaque population :
@@ -27,9 +28,20 @@ Paramètres généraux :
     • Ecart type de modification : écart type de la loi normale utilisée pour la modification du réseau de neurone d'un enfant.
         Plus ce nombre est grand, plus l'enfant sera différent de son parent.
     • Population : le nombre d'individus lors de la création de la simulation
+    • Taille de la carte : le nombre de cases (longeur et largeur) de la simulation
+        Une carte plus grande (ex : 150 x 150) peut donner lieux à de meilleurs simulations
+        ⚠ En mettant une taille de carte plus grande, il faut penser à diminuer la taille des cases pour éviter d'avoir une fenêtre trop grande ⚠
+    • Taille des cases : la taille d'une cellule individuelle (en pixels)
+    • Graphe en temps réel : si activé, l'affichage du graphe en cours de simulation fera qu'il se met à jour automatiquement à chaque étape
+    • Delta time : le temps (en milisecondes) minimum entre deux étapes (si le calcul d'une étape prend moins de temps que le delta time, le programme fera une 'pause'). Cela permet de controller la vitesse de la simulation.
+        Un delta time trop bas peut ralentir l'interface graphique.
 
 
-⚠ Les changements sont appliqués au démarrage d'une nouvelle simulation ⚠
+Control des paramètres :
+    Il est possible de réinitialiser les paramètres à ceux par défaut en cliquant sur 'Réinitialiser'.
+    En cliquant sur 'Sauvegarder', les paramètres actuels vont remplacer les paramètres par défaut, et donc modifier les paramètres appliqués lors de la réinitialisaton (des paramètres).
+    Notez toutefois que relancer le programme effacera les paramètres sauvegardés.
+
 """
 
     def __init__(self):

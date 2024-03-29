@@ -6,7 +6,7 @@ Une compétition évolutive à base d'intelligence artificielle, de pierres, de 
 
 ## Prérequis
 
-Python est requis pour éxecuter l'application. Vous pouvez le télécharger [ici](https://python.org/downloads).
+Python version 3.10 ou supérieure est requis pour exécuter l'application. Vous pouvez le télécharger [ici](https://python.org/downloads).
 
 Les dépendances nécessaires au fonctionnement de l'application sont :
 - [CustomTkinter](https://customtkinter.tomschimansky.com/)
@@ -28,7 +28,7 @@ Les dépendances sont présentes dans le fichier `requirements.txt`, l'installat
 
 ## Usage
 
-Merci de consulter la [documentation](doc/Documentation.md) pour plus d'informations sur l'utilisation de l'application.
+Merci de consulter la [documentation](doc/Documentation.md) pour plus d'informations sur l'utilisation et le fonctionnement de l'application.
 
 ## Résolution de problèmes
 

@@ -129,15 +129,6 @@ class Simulation:
         self.tick = 0
         self.generate(pop_size, internal_neurons)
 
-    def reset(self): # should be useless
-        self.map = np.empty(shape=self.grid_size, dtype=object)
-        self.tick = 0
-        self.log_0 = []
-        self.log_1 = []
-        self.log_2 = []
-        self.log_t = []
-        self.generate(self.pop_size, self.internal_neurons)
-
     def generate(self, pop_size, net_size):
         for _ in range(pop_size):
             rock = Entity(Entity.Types.ROCK, Network.new([(2 * self.vision[Entity.Types.ROCK] + 1) ** 2 * 3 - 1, net_size, 4]), self.energy[Entity.Types.ROCK][0], self.loss_factor[0])

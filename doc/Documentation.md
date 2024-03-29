@@ -13,6 +13,7 @@
    1. [Principe général](#principe-général)
    2. [La carte](#la-carte)
    3. [Les entités](#les-entités)
+3. [Exemples](#exemples)
 
 
 
@@ -87,7 +88,9 @@ Ces paramètres modifient la configuration générale de la simulation :
 
 - `Taille des cases` : Défini la taille des entités sur la carte. Pour une même taille de carte, une plus grande taille des cases augmente la taille du caneva.
 
-- `Graphe en temps réel` : Active ou désactive la mise à jour en temps réel du graphe durant la simulation. Ce paramètre est appliqué instantanément (pas besoin de recommencer une simulation)
+- `Graphe en temps réel` : Active ou désactive la mise à jour en temps réel du graphe durant la simulation. Ce paramètre est appliqué instantanément (pas besoin de recommencer une simulation).
+
+- `Delta time` : Défini le temps minimum entre chaque étape de la simulation. Plus ce paramètre est élevé, plus la simulation est lente. Ce paramètre est appliqué instantanément (pas besoin de recommencer une simulation).
 
 ### Paramètres des populations
 
@@ -123,8 +126,9 @@ Cette simulation comporte 3 populations différentes qui possède chacune une po
 
 ## La carte
 
-La simulation se déroule sur une carte rectangulaire topologiquement assimilable à un tore, c'est à dire que les entités qui sortent d'un côté de la carte réapparaissent de l'autre côté. Cette carte est divisé en cases, et chaque case ne peut contenir qu'une seule entité. 
-<!-- Les dimensions de la carte ainsi que la taille des cases sont définies dans les [paramètres généraux](#paramètres-généraux) de la simulation. -->
+La simulation se déroule sur une carte rectangulaire topologiquement assimilable à un tore, c'est à dire que les entités qui sortent d'un côté de la carte réapparaissent de l'autre côté. Cette carte est divisé en cases, et chaque case ne peut contenir qu'une seule entité.
+
+Les dimensions de la carte ainsi que la taille des cases sont définies dans les [paramètres généraux](#paramètres-généraux) de la simulation.
 
 ## Les entités
 
@@ -136,6 +140,20 @@ Chaque entité possède des caractéristiques lui permettant d'évoluer dans son
 
 L'énergie d'une entité représente à la fois sa santé et sa capacité à se reproduire. Au début de la simulation et lorsqu'elles naissent, les entités possèdent une quantité d'énergie initiale en fonction du [paramètre `Energie de naissance`](#paramètres-des-populations). Lorsque l'énergie d'une entité tombe à 0, elle meurt. L'énergie se perd naturellement au cours du temps mais aussi lors de la reproduction, le seul moyen d'en récupérer est d'attaquer une proie pour lui en voler. Une entité peut donc perdre de l'énergie si elle se fait attaquer.
 
-Les 3 actions possibles pour une entité sont se déplacer, attaquer ou se reproduire. La direction et la vitesse de déplacement d'une entité sont déterminées par son réseau de neurones, et limitées par le [paramètre `Vitesse`](#paramètres-des-populations). L'action d'attaquer une proie est aussi décidée par le réseau de neurones, mais n'est réalisable que si une proie est à [portée](#paramètres-des-populations). Enfin, l'action de se reproduire, qui est automatiquement déclenchée si l'énergie de l'entité est suffisante, crée un enfant sur une case [visible par l'entitée](#paramètres-des-populations) avec une énergie égale à [l'énergie de naissance](#paramètres-des-populations).
+Les 3 actions possibles pour une entité sont se déplacer, attaquer ou se reproduire. La direction et la vitesse de déplacement d'une entité sont déterminées par son réseau de neurones, et limitées par le [paramètre `Vitesse`](#paramètres-des-populations). L'action d'attaquer une proie est aussi décidée par le réseau de neurones, mais n'est réalisable que si une proie est à [portée](#paramètres-des-populations). Enfin, l'action de se reproduire, qui est automatiquement déclenchée si l'énergie de l'entité est suffisante, crée un enfant sur une case vide [visible par l'entitée](#paramètres-des-populations) avec une énergie égale à [l'énergie de naissance](#paramètres-des-populations).
 
 Le centre de décision des entités et le principal intérêt de cette simulation est le réseau de neurones. Chaque entité en possède un qui lui permet de faire les choix de déplacement et d'attaque en fonction de son âge (nombre d'étapes de simulation écoulées depuis sa naissance), de son énergie et de sa vision. Lors de la reproduction, le réseau de neurones de l'enfant est une mutation du réseau de neurones du parent, avec un facteur de mutation défini par le [paramètre `Ecart type de modification`](#paramètres-généraux). Cela permet de simuler les mutations génétique menant à l'évolution par sélection naturelle : les entités les plus adaptées à leur environnement et faisant les meilleurs choix survivent et transmettent leur « intelligence » à leur descendance.
+
+# Exemples
+
+Si jamais vous n'arriver pas à obtenir de simulation intéressante, voici des exemples de graphes présentant des évolution interessantes :
+
+![Exemple 1](exemples/exemple1.png)
+
+![Exemple 2](exemples/exemple2.png)
+
+![Exemple 3](exemples/exemple3.png)
+
+![Exemple 4](exemples/exemple4.png)
+
+![Exemple 5](exemples/exemple5.png)
